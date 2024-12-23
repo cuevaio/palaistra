@@ -1,11 +1,13 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import pic from "./pexels-jim-de-ramos-395808-1263349.jpg"
+
 import { Dumbbell } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+
+import pic from './pexels-jim-de-ramos-395808-1263349.jpg';
 
 export default function PalaistraLanding() {
   return (
