@@ -18,6 +18,7 @@ export default function Home() {
       console.log('pic-url-required');
     }
   }
+
   return (
     <div>
       <h1>Palaistra</h1>
