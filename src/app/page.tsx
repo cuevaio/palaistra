@@ -11,7 +11,7 @@ import { RegisterForm } from './register-form';
 export default function PalaistraLanding() {
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="flex h-14 items-center px-4 lg:px-6">
+      <header className="container mx-auto flex h-14 items-center px-4 lg:px-6">
         <Link className="flex items-center justify-center" href="#">
           <Dumbbell className="h-6 w-6 text-blue-600" />
           <span className="ml-2 text-2xl font-bold text-blue-600">
@@ -21,25 +21,7 @@ export default function PalaistraLanding() {
         <nav className="ml-auto flex gap-4 sm:gap-6">
           <Link
             className="text-sm font-medium underline-offset-4 hover:underline"
-            href="#"
-          >
-            Características
-          </Link>
-          <Link
-            className="text-sm font-medium underline-offset-4 hover:underline"
-            href="#"
-          >
-            Precios
-          </Link>
-          <Link
-            className="text-sm font-medium underline-offset-4 hover:underline"
-            href="#"
-          >
-            Acerca de
-          </Link>
-          <Link
-            className="text-sm font-medium underline-offset-4 hover:underline"
-            href="#"
+            href="#contact"
           >
             Contacto
           </Link>
@@ -80,7 +62,7 @@ export default function PalaistraLanding() {
         </section>
         <section className="w-full bg-white py-12 md:py-24 lg:py-32">
           <div className="container mx-auto px-4 md:px-6">
-            <h2 className="mb-8 text-center text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
+            <h2 id="contact" className="mb-8 text-center text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
               ¿Interesado en Nuestras Soluciones?
             </h2>
             <RegisterForm />
