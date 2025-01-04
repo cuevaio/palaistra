@@ -62,7 +62,10 @@ export default function PalaistraLanding() {
         </section>
         <section className="w-full bg-white py-12 md:py-24 lg:py-32">
           <div className="container mx-auto px-4 md:px-6">
-            <h2 id="contact" className="mb-8 text-center text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
+            <h2
+              id="contact"
+              className="mb-8 text-center text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl"
+            >
               ¿Interesado en Nuestras Soluciones?
             </h2>
             <RegisterForm />

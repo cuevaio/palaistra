@@ -36,6 +36,7 @@ export const register = async (
   const students = formData.get('students')?.toString();
   const teachers = formData.get('teachers')?.toString();
   const message = formData.get('message')?.toString();
+
   try {
     const data = z
       .object({
