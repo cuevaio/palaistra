@@ -33,11 +33,11 @@ export const upsert = async (
         data.categories.map((c) => ({ ...c, palaistra_id: data.palaistra_id })),
       );
 
-    await db
+    /*  await db
       .insert(schema.group)
       .values(
         data.groups.map((g) => ({ ...g, palaistra_id: data.palaistra_id })),
-      );
+      ); */
 
     return {
       ok: true,
