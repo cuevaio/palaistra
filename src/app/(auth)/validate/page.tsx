@@ -50,6 +50,7 @@ export default function Validate() {
         name="otp"
         pattern={otpAlphabetRegex}
         defaultValue={state?.form.otp}
+        inputMode='text'
       >
         <InputOTPGroup>
           <InputOTPSlot index={0} />
