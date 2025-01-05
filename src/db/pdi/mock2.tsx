@@ -52,6 +52,7 @@ function parseMonthsToDateRange(monthsStr: string) {
 }
 
 type CSVRow = {
+  id: string;
   student_name: string;
   email: string;
   category: string;
@@ -60,6 +61,7 @@ type CSVRow = {
   end_time: string;
   days: string;
   months: string;
+  parent_name: string;
 };
 
 type StudentInfo = {
@@ -139,19 +141,27 @@ async function populateDatabase() {
   const file = Bun.file('./pdi_db.csv');
   const fileContent = await file.text();
 
-  const { data: csvData } = Papa.parse<CSVRow>(fileContent, {
+  let { data: csvData } = Papa.parse<CSVRow>(fileContent, {
     header: true,
     dynamicTyping: true,
     skipEmptyLines: true,
   });
+  csvData = csvData.map((x) => ({ ...x, id: id() }));
 
   // Process students from CSV with their individual months
-  const students = csvData.map((row) => ({
-    name: row.student_name,
-    email: row.email,
-    id: id(),
-    months: row.months,
-  }));
+  const students = csvData.map((row) => {
+    const parent_name =
+      row.parent_name?.length > 0 ? row.parent_name : undefined;
+
+    return {
+      name: row.student_name,
+      email: parent_name ? 'user_' + row.id + '@palaistra.com.pe' : row.email,
+      id: row.id,
+      months: row.months,
+      parent_name,
+      parent_email: parent_name ? row.email : undefined,
+    };
+  });
 
   // Insert students (without months in the database)
   await db
@@ -171,6 +181,7 @@ async function populateDatabase() {
       );
     }),
   );
+
   await db.insert(schema.membership).values(
     students.map(
       (student) =>
@@ -180,6 +191,60 @@ async function populateDatabase() {
           roles: ['student'],
         }) satisfies MembershipInsert,
     ),
+  );
+
+  const parents = new Map<string, { children: string[]; name: string }>();
+  students.forEach((st) => {
+    if (!st.parent_email) return;
+    if (parents.has(st.parent_email)) {
+      parents.set(st.parent_email, {
+        children: [...parents.get(st.parent_email)!.children, st.id],
+        name: parents.get(st.parent_email)!.name ?? st.parent_name,
+      });
+    } else {
+      parents.set(st.parent_email, {
+        children: [st.id],
+        name: st.parent_name!,
+      });
+    }
+  });
+
+  const ppp = [...parents].map(([email, { children, name }]) => ({
+    name,
+    email,
+    id: id(),
+    children,
+  }));
+
+  // Insert parents
+  await db
+    .insert(schema.user)
+    .values(ppp.map((x) => ({ id: x.id, name: x.name, email: x.email })));
+
+  await Promise.all(
+    ppp.map(async (parent) => {
+      await redis.set(`email:${parent.email}:user:id`, parent.id);
+      await redis.hset(`user:${parent.id}`, {
+        name: parent.name,
+        email: parent.email,
+        id: parent.id,
+      });
+      await redis.sadd<Role>(
+        `membership|${parent.id}|${palaistra.id}`,
+        'parent',
+      );
+    }),
+  );
+
+  await Promise.all(
+    ppp.map(async (parent) => {
+      await db.insert(schema.parental).values(
+        parent.children.map((c) => ({
+          parent_id: parent.id,
+          student_id: c,
+        })),
+      );
+    }),
   );
 
   // SPORT
@@ -207,7 +272,7 @@ async function populateDatabase() {
     }
 
     // Find the corresponding student with their months
-    const studentInfo = students.find((s) => s.email === row.email);
+    const studentInfo = students.find((s) => s.id === row.id);
     if (studentInfo) {
       acc[row.category][row.group].students.push(studentInfo);
     }
@@ -283,12 +348,15 @@ async function populateDatabase() {
   await resend.batch.send(
     students.map((student) => ({
       from: 'PDI <palaistra-pdi@updates.cueva.io>',
-      to: [student.email],
-      subject: '¡Bienvenidos a las Clases de Natación! [Información Importante]',
+      to: [student.parent_email || student.email],
+      subject:
+        '¡Bienvenidos a las Clases de Natación! [Información Importante]' +
+        (student.parent_email ? ' [' + student.name.split(' ')[0] + ']' : ''),
       react: (
         <Welcome
-          name={student.name}
+          student_name={student.name}
           qr_url={qrs.find((q) => q.id === student.id)!.qr_url!}
+          parent_name={student.parent_name}
         />
       ),
     })),

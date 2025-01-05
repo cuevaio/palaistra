@@ -1,5 +1,5 @@
-student_name,student_dni,student_birthdate,months,days,start_time,end_time,category,group,email,phone
-Pedro Gomez,23451620,30/11/1980,Ene,"S,D",12:00,14:00,Adultos,Mediodía,pedro@gmail.com,955520222
-Valeria Cueva,97979797,31/08/2016,Ene - Feb,"L,X,V",13:00,15:00,Niños,Tarde,hi.cuevantn@gmail.com,955520464
-Andrea Cueva,23452354,10/08/2016,Ene - Mar,"L,X,V",13:00,15:00,Niños,Tarde,andre@gmail.com,955520999
-Diego Alarcon,71458698,02/11/2001,Ene,D,13:00,15:00,Avanzado,Tarde,dabus.38@hotmail.com,972343025
+student_name,student_dni,student_birthdate,months,days,start_time,end_time,category,group,email,phone,parent_name
+Pedro Gomez,23451620,30/11/1980,Ene,"S,D",12:00,14:00,Adultos,Mediodía,pedro@gmail.com,955520222,
+Valeria Cueva,97979797,31/08/2016,Ene - Feb,"L,X,V",13:00,15:00,Niños,Tarde,hi.cuevantn@gmail.com,955520464,Anthony Cueva
+Andrea Cueva,23452354,10/08/2016,Ene - Mar,"L,X,V",13:00,15:00,Niños,Tarde,hi.cuevantn@gmail.com,955520999,Anthony Cueva
+Diego Alarcon,71458698,02/11/2001,Ene,D,13:00,15:00,Avanzado,Tarde,dabus.38@hotmail.com,972343025,

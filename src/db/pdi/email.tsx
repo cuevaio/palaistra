@@ -16,7 +16,15 @@ import {
   Text,
 } from '@react-email/components';
 
-export const Welcome = ({ name, qr_url }: { name: string; qr_url: string }) => (
+export const Welcome = ({
+  student_name,
+  qr_url,
+  parent_name,
+}: {
+  student_name: string;
+  qr_url: string;
+  parent_name?: string;
+}) => (
   <Html>
     <Head />
     <Preview>Bienvenido</Preview>
@@ -41,10 +49,14 @@ export const Welcome = ({ name, qr_url }: { name: string; qr_url: string }) => (
         <Heading style={heading}>
           ¡Bienvenidos a las Clases de Natación!
         </Heading>
-        <Text style={paragraph}>Hola, {name}!</Text>
+
         <Text style={paragraph}>
-          Nos complace anunciar que las clases de natación comenzarán el día de
-          hoy, y estamos muy emocionados de contar con su participación.
+          Hola, {parent_name ? parent_name.split(' ')[0] : student_name}!
+        </Text>
+        <Text style={paragraph}>
+          Nos complace anunciar que las clases de natación{' '}
+          {parent_name && `de ${student_name.split(' ')[0]} `}comenzarán el día
+          de hoy, y estamos muy emocionados de contar con su participación.
         </Text>
         <Text style={paragraph}>
           Para asegurar un registro adecuado de asistencia, es obligatorio que
@@ -70,11 +82,23 @@ export const Welcome = ({ name, qr_url }: { name: string; qr_url: string }) => (
           correctamente, por lo que es muy importante que lo tenga consigo al
           llegar.
         </Text>
+
+        <Text style={paragraph}>
+          Si deseas conocer más acerca de tu asistencia visita{' '}
+          <Link href="https://pdi.palaistra.com.pe" style={{}}>
+            nuestra página web
+          </Link>{' '}
+          (
+          <Link href="https://pdi.palaistra.com.pe" style={{}}>
+            https://pdi.palaistra.com.pe
+          </Link>
+          ) e inicia sesión con este correo electrónico.
+        </Text>
+        
         <Text style={paragraph}>
           Si tiene alguna pregunta o necesita más información, no dude en
           contactarnos.
         </Text>
-
         <Text style={{ ...paragraph, fontWeight: 'bold' }}>
           ¡Nos vemos en la piscina!
         </Text>
@@ -89,7 +113,8 @@ export const Welcome = ({ name, qr_url }: { name: string; qr_url: string }) => (
 );
 
 Welcome.PreviewProps = {
-  name: 'Anthony Cueva',
+  student_name: 'Valeria Cueva',
+  parent_name: 'Anthony Cueva',
   qr_url: 'https://utfs.io/f/RYXHiEujQhFxR35cwrujQhFxkmLNv5AGpWcUErfqBn1g0Hsy',
 };
 export default Welcome;

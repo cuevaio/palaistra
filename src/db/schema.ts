@@ -69,6 +69,34 @@ export const membershipRelations = relations(membership, ({ one }) => ({
   }),
 }));
 
+export const parental = pgTable(
+  'parental',
+  {
+    student_id: varchar('student_id', { length: 12 })
+      .references(() => user.id)
+      .notNull(),
+    parent_id: varchar('parent_id', { length: 12 })
+      .references(() => user.id)
+      .notNull(),
+
+    created_at: timestamp('created_at').defaultNow().notNull(),
+    updated_at: timestamp('updated_at').defaultNow().notNull(),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.student_id, table.parent_id] }),
+  }),
+);
+export const parentalRelations = relations(parental, ({ one }) => ({
+  student: one(user, {
+    fields: [parental.student_id],
+    references: [user.id],
+  }),
+  parent: one(palaistra, {
+    fields: [parental.parent_id],
+    references: [palaistra.id],
+  }),
+}));
+
 export const palaistra = pgTable('palaistra', {
   id: varchar('id', { length: 12 }).primaryKey(),
   handle: varchar('handle', { length: 255 }).notNull().unique(),
@@ -337,5 +365,3 @@ export type EnrollmentInsert = typeof enrollment.$inferInsert;
 export const PalaistraInsertSchema = createInsertSchema(palaistra);
 export const CategoryInsertSchema = createInsertSchema(category);
 export const GroupInsertSchema = createInsertSchema(group);
-
-

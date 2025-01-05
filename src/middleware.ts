@@ -34,6 +34,17 @@ export async function middleware(request: NextRequest) {
 
       // If not admin, redirect to /{their_id}
       if (!isAdmin) {
+        const isParent = await redis.sismember(
+          `membership|${auth.user.id}|${pdi_id}`,
+          'parent',
+        );
+
+        if (isParent) {
+          const userUrl = request.nextUrl.clone();
+          userUrl.pathname = `/pdi/children`;
+          return NextResponse.rewrite(userUrl);
+        }
+
         const userUrl = request.nextUrl.clone();
         userUrl.pathname = `/pdi/${auth.user.id}`;
         return NextResponse.rewrite(userUrl);

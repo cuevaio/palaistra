@@ -35,7 +35,6 @@ export async function createQR(url: string) {
   // Upload to UploadThing
   const response = await utapi.uploadFiles([file]);
 
-  console.log(response);
   // Return the URL from UploadThing
   return response[0].data?.url;
 }
