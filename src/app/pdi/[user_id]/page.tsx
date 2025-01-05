@@ -87,13 +87,14 @@ const Page = async (props: { params: Params }) => {
         start_date="2025-01-02"
         active_days={group.schedule[0].days}
         attendance={attendance.map((a) => ({
+          id: a.id,
           date: a.taken_at,
           time: a.duration,
         }))}
       />
 
       <React.Suspense>
-        <MarkAttendance />
+        <MarkAttendance student_id={user_id} />
       </React.Suspense>
     </div>
   );

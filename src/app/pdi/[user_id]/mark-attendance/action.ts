@@ -3,12 +3,13 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
-import { getUserAndSession } from '@/auth';
+import { getSession } from '@/auth';
 import { NeonDbError } from '@neondatabase/serverless';
 import { z } from 'zod';
 
 import { db, schema } from '@/db';
 import { pdi_id } from '@/db/pdi/constants';
+import { redis } from '@/db/redis';
 
 import { ActionState } from '@/lib/action-state-generic-type';
 import { id } from '@/lib/nanoid';
@@ -29,9 +30,16 @@ export const markAttendance = async (
   const form = { student_id, hours };
 
   try {
-    const auth = await getUserAndSession();
+    const session = await getSession();
 
-    if (!auth?.user) redirect('/signin');
+    if (!session) redirect('/signin');
+    const isAdmin = await redis.sismember(
+      `membership|${session.userId}|${pdi_id}`,
+      'admin',
+    );
+
+    if (!isAdmin) redirect('/');
+
     if (!form.student_id) throw new Error('student_id missing');
 
     const duration = z
@@ -55,7 +63,7 @@ export const markAttendance = async (
     await db.insert(schema.attendance).values({
       id: id(),
       student_id: enrollment.student_id,
-      admin_id: auth.user.id,
+      admin_id: session.userId,
 
       group_id: enrollment.group_id,
       category_id: enrollment.category_id,

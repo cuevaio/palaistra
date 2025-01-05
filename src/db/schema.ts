@@ -274,8 +274,12 @@ export const attendance = pgTable('attendance', {
   taken_at: timestamp('taken_at', { mode: 'string' }).defaultNow().notNull(),
   duration: time('duration').notNull(),
 
-  created_at: timestamp('created_at').defaultNow().notNull(),
-  updated_at: timestamp('updated_at').defaultNow().notNull(),
+  created_at: timestamp('created_at', { mode: 'string' })
+    .defaultNow()
+    .notNull(),
+  updated_at: timestamp('updated_at', { mode: 'string' })
+    .defaultNow()
+    .notNull(),
 });
 export const attendaceRelations = relations(attendance, ({ one }) => ({
   student: one(user, {

@@ -2,6 +2,18 @@
 
 import React from 'react';
 
+import { Loader2Icon } from 'lucide-react';
+
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import {
   Table,
@@ -16,6 +28,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Day, days } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 
+import { removeAttendance } from './remove-attendance.action';
+
 export const Attendance = ({
   start_date,
   active_days,
@@ -23,11 +37,28 @@ export const Attendance = ({
 }: {
   start_date: string;
   active_days: Day[];
-  attendance: { date: string; time: string }[];
+  attendance: { id: string; date: string; time: string }[];
 }) => {
   const [y, m, d] = start_date.split('-');
   const start = new Date(Number(y), Number(m) - 1, Number(d));
   const today = new Date();
+
+  const [open, setOpen] = React.useState(false);
+
+  const [selectedAttendance, setSelectedAttendance] = React.useState<
+    { id: string; date: string; time: string } | undefined
+  >();
+
+  const [state, action, isPending] = React.useActionState(
+    removeAttendance,
+    null,
+  );
+
+  React.useEffect(()=>{
+    if (!isPending && state?.success) {
+      setOpen(false)
+    }
+  }, [state,isPending])
 
   return (
     <div className="mt-12">
@@ -59,13 +90,15 @@ export const Attendance = ({
                         (active_days.includes(days[date.getDay()])
                           ? attendance.some(
                               (d) =>
-                                new Date(d.date).getDate() === date.getDate(),
+                                new Date(d.date + 'Z').getDate() ===
+                                date.getDate(),
                             )
                             ? 'bg-green-500/60'
                             : 'bg-red-500/60'
                           : attendance.some(
                               (d) =>
-                                new Date(d.date).getDate() === date.getDate(),
+                                new Date(d.date + 'Z').getDate() ===
+                                date.getDate(),
                             ) && 'bg-orange-500/60'),
                     )}
                   >
@@ -90,9 +123,15 @@ export const Attendance = ({
             </TableHeader>
             <TableBody>
               {attendance.map((d) => (
-                <TableRow key={d.date}>
+                <TableRow
+                  key={d.date}
+                  onClick={() => {
+                    setSelectedAttendance(d);
+                    setOpen(true);
+                  }}
+                >
                   <TableCell>
-                    {new Date(d.date).toLocaleDateString('es', {
+                    {new Date(d.date + 'Z').toLocaleDateString('es', {
                       day: '2-digit',
                       month: '2-digit',
                       year: 'numeric',
@@ -102,13 +141,17 @@ export const Attendance = ({
                   <TableCell>
                     <span
                       className={cn(
-                        active_days.includes(days[new Date(d.date).getDay()])
+                        active_days.includes(
+                          days[new Date(d.date + 'Z').getDay()],
+                        )
                           ? 'bg-green-500/60'
                           : 'bg-orange-500/60',
                         'rounded-lg px-1 py-1',
                       )}
                     >
-                      {active_days.includes(days[new Date(d.date).getDay()])
+                      {active_days.includes(
+                        days[new Date(d.date + 'Z').getDay()],
+                      )
                         ? 'Clase'
                         : 'Recuperación'}
                     </span>
@@ -119,6 +162,43 @@ export const Attendance = ({
           </Table>
         </TabsContent>
       </Tabs>
+      {selectedAttendance && (
+        <AlertDialog open={open} onOpenChange={setOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                ¿Deseas eliminar esta asistencia?
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                Al hacer click en eliminar se eliminará el registro de
+                asistencia del día{' '}
+                {new Date(selectedAttendance.date + 'Z').toLocaleDateString(
+                  'es',
+                  {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                  },
+                )}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+              <form action={action}>
+                <input
+                  type="hidden"
+                  name="attendance_id"
+                  defaultValue={selectedAttendance.id}
+                />
+                <Button type="submit" disabled={isPending}>
+                  {isPending && <Loader2Icon className="animate-spin" />}
+                  Eliminar
+                </Button>
+              </form>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
     </div>
   );
 };
