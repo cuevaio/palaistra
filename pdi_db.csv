@@ -1,6 +1,14 @@
 student_name,student_dni,student_birthdate,months,days,start_time,end_time,category,group,email,phone,parent_name
-Pedro Gomez,23451620,30/11/1980,Ene,"S,D",12:00,14:00,Adultos,Mediodía,pedro@gmail.com,955520222,
-Valeria Cueva,97979797,31/08/2016,Ene - Feb,"L,X,V",13:00,15:00,Niños,Tarde,hi.cuevantn@gmail.com,955520464,Anthony Cueva
-Andrea Cueva,23452354,10/08/2016,Ene - Mar,"L,X,V",13:00,15:00,Niños,Tarde,hi.cuevantn@gmail.com,955520999,Anthony Cueva
-Diego Alarcon,71458698,02/11/2001,Ene,D,13:00,15:00,Avanzado,Tarde,dabus.38@hotmail.com,972343025,
-Piero Rojas,23452354,10/08/2016,Ene - Mar,"L,X,V",13:00,15:00,Niños,Tarde,edsonrojas93@gmail.com,955520599,Edson Rojas
+Liam Javier Noled Rodriguez,91754759,3/2/2020,Ene,D,13:00,15:00,Niños,Dominical,jackr185@gmail.com,968712175,Elvis Nole Rodriguez 
+Lua Cuenca Peralta,93183384,12/18/2022,Ene,D,13:15,14:00,Niños,Dominical 2,carlosmauriciocuencarios@gmail.com,934242889,Carlos Mauricio Cuenca Rios
+Khanum Cabrera,90428061,11/9/2017,Ene,"M,D",13:15,14:00,Niños,Custom 1,rebeca_bp@hotmail.com,941105647,Rebeca Bedriñana Peralta
+Sebastián Gálvez Susaya ,78491330,3/4/2014,Ene,D,13:00,15:00,Niños,Dominical,Elisu0911@gmail.com,917276947,Gaby Susaya 
+Gabriel Gálvez Susaya,79769322,7/11/2016,Ene,D,13:00,15:00,Niños,Dominical,Elisu0911@gmail.com,917276947,Gaby Susaya 
+Gerardo Mercado ,90797616,5/4/2018,Ene,D,13:00,15:00,Niños,Dominical,crikme84@gmail.com,987111054,Erik Mercado
+Fernanda Mercado,78757795,9/15/2014,Ene,D,13:00,15:00,Niños,Dominical,crikme84@gmail.com,987111054,Erik Mercado
+Haydé Guzmán,41233386,1/11/1982,Ene,D,13:00,15:00,Niños,Dominical,crikme84@gmail.com,987111054,Erik Mercado
+Javier Huaroto,93091406,,Ene,D,13:15,14:00,Niños,Dominical 2,sandris_1023@hotmail.com,93091406,Diego Miguel Huaroto Larrea
+Diego Alarcon,71458698,02/11/2001,Ene,D,16:00,18:00,Avanzado,Noche,dabus.38@hotmail.com,972343025,
+Franchesca Huapaya Ticse,70502507,1/26/1995,Ene,D,13:00,15:00,General,Dominical,franchescahuapaya@gmail.com,933543162,
+Antonella Carhuas,77591027,9/18/2022,Ene,D,13:15,14:00,Niños,Dominical 2,jramirezlaupa@gmail.com,982633164,Jessica Ramirez Laupa 
+Sammir Carhuas	,77591027,3/6/2012,Ene,D,13:00,15:00,Niños,Dominical,jramirezlaupa@gmail.com,982633164,Jessica Ramirez Laupa 

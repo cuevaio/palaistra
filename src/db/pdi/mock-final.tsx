@@ -83,7 +83,7 @@ type CategoriesGroups = {
 };
 
 async function populateDatabase() {
-  await redis.flushdb();
+  // await redis.flushdb();
 
   // Create Palaistra
   const [palaistra] = await db
@@ -110,6 +110,11 @@ async function populateDatabase() {
       name: 'Anthony Cueva',
       email: 'hi@cueva.io',
       id: 'AAAAAAAAAAAA',
+    },
+    {
+      name: 'Edson Rojas',
+      email: 'edsonrojas93@gmail.com',
+      id: '',
     },
   ];
 
