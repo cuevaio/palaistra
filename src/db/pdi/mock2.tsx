@@ -8,6 +8,8 @@ import { db, schema } from '..';
 import { redis } from '../redis';
 import { EnrollmentInsert, MembershipInsert } from '../schema';
 import { pdi_id } from './constants';
+import Welcome from './email';
+import { createQR } from './store-qr';
 
 // Function to parse month ranges and return start and end dates
 function parseMonthsToDateRange(monthsStr: string) {
@@ -265,13 +267,30 @@ async function populateDatabase() {
     }),
   );
 
+  const qrs = await Promise.all(
+    students.map(async (student) => {
+      const qr_url = await createQR(
+        `https://pdi.palaistra.com.pe/${student.id}`,
+      );
+
+      return {
+        id: student.id,
+        qr_url,
+      };
+    }),
+  );
+
   await resend.batch.send(
     students.map((student) => ({
       from: 'PDI <palaistra-pdi@updates.cueva.io>',
       to: [student.email],
-      subject: '¡Bienvenidos a las Clases de Natación! Información Importante',
-      html: `<p>Hola <strong>${student.name}</strong></p>
-      <p>Ingresa a <a href="https://pdi.palaistra.com.pe">https://pdi.palaistra.com.pe</a> con este correo :)</p>`,
+      subject: '¡Bienvenidos a las Clases de Natación! [Información Importante]',
+      react: (
+        <Welcome
+          name={student.name}
+          qr_url={qrs.find((q) => q.id === student.id)!.qr_url!}
+        />
+      ),
     })),
   );
 }

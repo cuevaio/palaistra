@@ -10,7 +10,7 @@ import { pdi_id } from '@/db/pdi/constants';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 
-import pdi_logo from '../pdi-logo.jpg';
+import pdi_logo from '../logo-pdi.jpg';
 import { Attendance } from './attedance';
 import { MarkAttendance } from './mark-attendance';
 import { QRCode } from './qr';
@@ -57,13 +57,7 @@ const Page = async (props: { params: Params }) => {
         className="-m-10"
       />
       <div className="w-64">
-        <QRCode
-          url={
-            process.env.NODE_ENV === 'development'
-              ? `http://pdi.localhost:3000/${user_id}`
-              : `http://pdi.palaistra.com.pe/${user_id}`
-          }
-        />
+        <QRCode url={`http://pdi.palaistra.com.pe/${user_id}`} />
       </div>
       <div className="my-4 flex flex-col items-center">
         <p className="text-xl font-bold">{student.name}</p>

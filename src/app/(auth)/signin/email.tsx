@@ -34,8 +34,8 @@ export const SigninCodeEmail = ({
             <Column align="right">
               <Img
                 src={'https://palaistra.com.pe/logo-pdi.jpg'}
-                width="200"
-                height="200"
+                width="464"
+                height="312"
                 alt="PDI"
                 style={logo}
               />
@@ -60,10 +60,8 @@ export const SigninCodeEmail = ({
 const title = { fontSize: '17px', fontWeight: 'bold' };
 
 const logo = {
-  borderRadius: 21,
-  width: 180,
-  height: 180,
-  margin: '-55px -25px -40px -25px',
+  width: 102,
+  height: 77,
 };
 
 const main = {

@@ -1,6 +1,6 @@
 import Image from 'next/image';
 
-import pdi_logo from '../pdi/pdi-logo.jpg';
+import pdi_logo from '../pdi/logo-pdi.jpg';
 import loginImage from './pexels-spaceshipguy-16381486.jpg';
 
 export default async function AuthLayout({
