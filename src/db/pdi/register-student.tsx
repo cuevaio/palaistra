@@ -216,7 +216,7 @@ async function registerStudent(input: StudentRegistrationInput) {
   const qr_url = await createQR(`https://pdi.palaistra.com.pe/${student_id}`);
 
   await resend.emails.send({
-    from: 'PDI x Palaistra <welcome@pdi.palaistra.com.pe>',
+    from: 'PDI x Palaistra <pdi@updates.palaistra.com.pe>',
     to: [input.parent_name ? input.email : student_email],
     subject:
       '¡Bienvenidos a las Clases de Natación! [Información Importante]' +
