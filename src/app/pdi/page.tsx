@@ -41,8 +41,17 @@ const Page = async () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {enrollments.map(
-            ({ student, category, group, starts_at, ends_at }) => (
+          {enrollments
+            .toSorted((a, b) => {
+              if (a.student.name < b.student.name) {
+                return -1;
+              }
+              if (a.student.name > b.student.name) {
+                return 1;
+              }
+              return 0;
+            })
+            .map(({ student, category, group, starts_at, ends_at }) => (
               <TableRow key={student.id} className="relative">
                 <TableCell>
                   <Link
@@ -66,8 +75,7 @@ const Page = async () => {
                 <TableCell>{starts_at}</TableCell>
                 <TableCell>{ends_at}</TableCell>
               </TableRow>
-            ),
-          )}
+            ))}
         </TableBody>
       </Table>
     </div>
