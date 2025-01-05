@@ -51,10 +51,10 @@ const Page = async (props: { params: Params }) => {
     <div className="mx-auto flex min-h-[110vh] max-w-md flex-col items-center">
       <Image
         src={pdi_logo}
-        width={200}
-        height={200}
+        width={150}
+        height={150}
         alt="PDI logo"
-        className="-m-10"
+        className="m-10"
       />
       <div className="w-64">
         <QRCode url={`http://pdi.palaistra.com.pe/${user_id}`} />

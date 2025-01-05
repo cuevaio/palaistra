@@ -1,4 +1,3 @@
-// app/api/qr/route.ts
 import QRCode from 'qrcode';
 import { UTApi, UTFile } from 'uploadthing/server';
 
@@ -40,6 +39,3 @@ export async function createQR(url: string) {
   // Return the URL from UploadThing
   return response[0].data?.url;
 }
-
-const url = await createQR('https://pdi.palaistra.com.pe/OuDws9bKqWAD');
-console.log({ url });

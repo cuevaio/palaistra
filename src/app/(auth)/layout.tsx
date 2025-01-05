@@ -16,7 +16,7 @@ export default async function AuthLayout({
           width={200}
           height={200}
           alt="PDI logo"
-          className="-m-10"
+          className="m-10"
         />
         <h1 className="text-xl font-bold">Inicia sesión en PDI</h1>
 

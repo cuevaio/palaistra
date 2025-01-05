@@ -6,6 +6,7 @@ import './globals.css';
 
 import { ourFileRouter } from '@/app/api/uploadthing/core';
 import { NextSSRPlugin } from '@uploadthing/react/next-ssr-plugin';
+import { Analytics } from '@vercel/analytics/next';
 import { extractRouterConfig } from 'uploadthing/server';
 
 import { Toaster } from '@/components/ui/sonner';
@@ -58,6 +59,7 @@ export default function RootLayout({
         />
         {children}
         <Toaster />
+        <Analytics />
       </body>
     </html>
   );
