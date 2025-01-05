@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
-import { getSession } from '@/auth';
+import { getUserAndSession } from '@/auth';
 import { NeonDbError } from '@neondatabase/serverless';
 import { z } from 'zod';
 
@@ -30,11 +30,11 @@ export const markAttendance = async (
   const form = { student_id, hours };
 
   try {
-    const session = await getSession();
+    const auth = await getUserAndSession();
 
-    if (!session) redirect('/signin');
+    if (!auth) redirect('/signin');
     const isAdmin = await redis.sismember(
-      `membership|${session.userId}|${pdi_id}`,
+      `membership|${auth.user.id}|${pdi_id}`,
       'admin',
     );
 
@@ -63,7 +63,7 @@ export const markAttendance = async (
     await db.insert(schema.attendance).values({
       id: id(),
       student_id: enrollment.student_id,
-      admin_id: session.userId,
+      admin_id: auth.user.id,
 
       group_id: enrollment.group_id,
       category_id: enrollment.category_id,

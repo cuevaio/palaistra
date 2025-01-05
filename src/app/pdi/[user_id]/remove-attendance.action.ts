@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
-import { getSession } from '@/auth';
+import { getUserAndSession } from '@/auth';
 import { NeonDbError } from '@neondatabase/serverless';
 import { eq } from 'drizzle-orm';
 
@@ -23,11 +23,11 @@ export const removeAttendance = async (
   const attendance_id = formData.get('attendance_id')?.toString();
 
   try {
-    const session = await getSession();
+    const auth = await getUserAndSession();
 
-    if (!session) redirect('/signin');
+    if (!auth) redirect('/signin');
     const isAdmin = await redis.sismember(
-      `membership|${session.userId}|${pdi_id}`,
+      `membership|${auth.user.id}|${pdi_id}`,
       'admin',
     );
 

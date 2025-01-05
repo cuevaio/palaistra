@@ -1,7 +1,7 @@
 // middleware.ts
 import { NextResponse, type NextRequest } from 'next/server';
 
-import { getSession } from './auth/middleware'; // Adjust import path as needed
+import { getUserAndSession } from './auth/middleware'; // Adjust import path as needed
 
 import { pdi_id } from './db/pdi/constants';
 import { redis } from './db/redis'; // Adjust import path as needed
@@ -15,10 +15,10 @@ export async function middleware(request: NextRequest) {
 
   if (isPDIHostname) {
     // Get session for authentication check
-    const session = await getSession(request);
+    const auth = await getUserAndSession(request);
 
     // If no session, redirect to signin page
-    if (!session) {
+    if (!auth) {
       const signinUrl = request.nextUrl.clone();
       signinUrl.pathname = '/signin';
       return NextResponse.redirect(signinUrl);
@@ -28,14 +28,14 @@ export async function middleware(request: NextRequest) {
     if (pathname === '/') {
       // Check if user is admin
       const isAdmin = await redis.sismember(
-        `membership|${session.userId}|${pdi_id}`,
+        `membership|${auth.user.id}|${pdi_id}`,
         'admin',
       );
 
       // If not admin, redirect to /{their_id}
       if (!isAdmin) {
         const userUrl = request.nextUrl.clone();
-        userUrl.pathname = `/${session.userId}`;
+        userUrl.pathname = `/${auth.user.id}`;
         return NextResponse.redirect(userUrl);
       }
     }

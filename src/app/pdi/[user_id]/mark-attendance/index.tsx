@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 
-import { getSession } from '@/auth';
+import { getUserAndSession } from '@/auth';
 
 import { db } from '@/db';
 import { pdi_id } from '@/db/pdi/constants';
@@ -13,15 +13,15 @@ export const MarkAttendance = async ({
 }: {
   student_id: string;
 }) => {
-  const session = await getSession();
-  if (!session) redirect('/signin');
+  const auth = await getUserAndSession();
 
+  if (!auth) redirect('/signin');
   const isAdmin = await redis.sismember(
-    `membership|${session.userId}|${pdi_id}`,
+    `membership|${auth.user.id}|${pdi_id}`,
     'admin',
   );
 
-  if (!isAdmin) return null;
+  if (!isAdmin) redirect('/');
 
   const attendance = await db.query.attendance.findFirst({
     columns: {
