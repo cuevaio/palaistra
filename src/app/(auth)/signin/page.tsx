@@ -43,7 +43,7 @@ export default function Signin() {
         disabled={isPending}
       />
       <Button className="w-full" disabled={isPending}>
-        Continue
+        Continuar
       </Button>
     </form>
   );

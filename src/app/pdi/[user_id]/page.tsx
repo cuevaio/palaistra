@@ -2,17 +2,18 @@ import React from 'react';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 
+import { logout } from '@/app/(auth)/logout.action';
+
 import { db } from '@/db';
 import { pdi_id } from '@/db/pdi/constants';
 
+import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 
 import pdi_logo from '../pdi-logo.jpg';
 import { Attendance } from './attedance';
 import { MarkAttendance } from './mark-attendance';
 import { QRCode } from './qr';
-import { Button } from '@/components/ui/button';
-import { logout } from '@/app/(auth)/logout.action';
 
 type Params = Promise<{ user_id: string }>;
 
@@ -44,7 +45,7 @@ const Page = async (props: { params: Params }) => {
 
   if (!enrollment) return notFound();
 
-  const { student, category, group, attendance } = enrollment;
+  const { student, group, attendance } = enrollment;
 
   return (
     <div className="mx-auto flex min-h-[110vh] max-w-md flex-col items-center">
@@ -66,9 +67,6 @@ const Page = async (props: { params: Params }) => {
       </div>
       <div className="my-4 flex flex-col items-center">
         <p className="text-xl font-bold">{student.name}</p>
-        <p className="text-sm">
-          {category.name} - {group.name}
-        </p>
         {group.schedule.map((turno, idx) => (
           <p key={idx}>
             {turno.days.join(', ')} | {turno.start_time} - {turno.end_time}
@@ -99,9 +97,10 @@ const Page = async (props: { params: Params }) => {
         <MarkAttendance student_id={user_id} />
       </React.Suspense>
 
-
       <form action={logout}>
-        <Button type='submit'>Cerrar sesión</Button>
+        <Button type="submit" className="my-8" variant="outline">
+          Cerrar sesión
+        </Button>
       </form>
     </div>
   );

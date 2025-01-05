@@ -2,18 +2,6 @@
 
 import React from 'react';
 
-import { Loader2Icon } from 'lucide-react';
-
-import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import {
   Table,
@@ -28,7 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Day, days } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 
-import { removeAttendance } from './remove-attendance.action';
+import { RemoveAttendanceDialog } from './remove';
 
 export const Attendance = ({
   start_date,
@@ -49,16 +37,18 @@ export const Attendance = ({
     { id: string; date: string; time: string } | undefined
   >();
 
-  const [state, action, isPending] = React.useActionState(
-    removeAttendance,
-    null,
-  );
+  const [isAdmin, setIsAdmin] = React.useState(false);
 
-  React.useEffect(()=>{
-    if (!isPending && state?.success) {
-      setOpen(false)
-    }
-  }, [state,isPending])
+  React.useEffect(() => {
+    const t = setTimeout(() => {
+      const button = document.querySelector('#mark-assistance');
+      setIsAdmin(!!button);
+    }, 5000);
+
+    return () => {
+      clearTimeout(t);
+    };
+  }, []);
 
   return (
     <div className="mt-12">
@@ -145,7 +135,7 @@ export const Attendance = ({
                           days[new Date(d.date + 'Z').getDay()],
                         )
                           ? 'bg-green-500/60'
-                          : 'bg-orange-500/60',
+                          : 'bg-blue-500/60',
                         'rounded-lg px-1 py-1',
                       )}
                     >
@@ -162,42 +152,12 @@ export const Attendance = ({
           </Table>
         </TabsContent>
       </Tabs>
-      {selectedAttendance && (
-        <AlertDialog open={open} onOpenChange={setOpen}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>
-                ¿Deseas eliminar esta asistencia?
-              </AlertDialogTitle>
-              <AlertDialogDescription>
-                Al hacer click en eliminar se eliminará el registro de
-                asistencia del día{' '}
-                {new Date(selectedAttendance.date + 'Z').toLocaleDateString(
-                  'es',
-                  {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                  },
-                )}
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancelar</AlertDialogCancel>
-              <form action={action}>
-                <input
-                  type="hidden"
-                  name="attendance_id"
-                  defaultValue={selectedAttendance.id}
-                />
-                <Button type="submit" disabled={isPending}>
-                  {isPending && <Loader2Icon className="animate-spin" />}
-                  Eliminar
-                </Button>
-              </form>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+      {isAdmin && selectedAttendance && (
+        <RemoveAttendanceDialog
+          open={open}
+          setOpen={setOpen}
+          selectedAttendance={selectedAttendance}
+        />
       )}
     </div>
   );

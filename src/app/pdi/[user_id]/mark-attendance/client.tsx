@@ -38,7 +38,6 @@ export const MarkAttendanceButton = ({
   }, [state, isPending]);
 
   const day = days[new Date().getDay()];
-  console.log(last_attendance_date);
 
   const has_passed_a_minute = React.useMemo(() => {
     let has_passed_a_minute = true;
@@ -71,7 +70,7 @@ export const MarkAttendanceButton = ({
           </SelectContent>
         </Select>
       </div>
-      <Button disabled={isPending || !has_passed_a_minute}>
+      <Button id="mark-assistance" disabled={isPending || !has_passed_a_minute}>
         Marcar asistencia
       </Button>
     </form>

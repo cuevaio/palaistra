@@ -1,5 +1,6 @@
 import Image from 'next/image';
 
+import pdi_logo from '../pdi/pdi-logo.jpg';
 import loginImage from './pexels-spaceshipguy-16381486.jpg';
 
 export default async function AuthLayout({
@@ -8,14 +9,20 @@ export default async function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="grid h-screen w-screen grid-cols-2">
+    <div className="grid h-screen w-screen grid-cols-1 md:grid-cols-2">
       <div className="min- mx-auto flex max-w-md flex-col items-center justify-center gap-4">
-        <h1 className="text-xl font-bold">PDI</h1>
-        <p className="text-sm text-muted-foreground">Escuela de natación</p>
+        <Image
+          src={pdi_logo}
+          width={200}
+          height={200}
+          alt="PDI logo"
+          className="-m-10"
+        />
+        <h1 className="text-xl font-bold">Inicia sesión en PDI</h1>
 
         {children}
       </div>
-      <div className="relative">
+      <div className="relative hidden md:flex">
         <Image
           src={loginImage}
           alt="Login"

@@ -35,8 +35,8 @@ export async function middleware(request: NextRequest) {
       // If not admin, redirect to /{their_id}
       if (!isAdmin) {
         const userUrl = request.nextUrl.clone();
-        userUrl.pathname = `/${auth.user.id}`;
-        return NextResponse.redirect(userUrl);
+        userUrl.pathname = `/pdi/${auth.user.id}`;
+        return NextResponse.rewrite(userUrl);
       }
     }
 

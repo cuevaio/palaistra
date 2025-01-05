@@ -65,7 +65,7 @@ export default function Validate() {
       </InputOTP>
 
       <Button className="w-full" disabled={isPending}>
-        Continue
+        Continuar
       </Button>
     </form>
   );

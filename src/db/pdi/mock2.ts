@@ -79,6 +79,8 @@ type CategoriesGroups = {
 };
 
 async function populateDatabase() {
+  await redis.flushdb();
+
   // Create Palaistra
   const [palaistra] = await db
     .insert(schema.palaistra)

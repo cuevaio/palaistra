@@ -21,7 +21,7 @@ export const MarkAttendance = async ({
     'admin',
   );
 
-  if (!isAdmin) redirect('/');
+  if (!isAdmin) return null;
 
   const attendance = await db.query.attendance.findFirst({
     columns: {
