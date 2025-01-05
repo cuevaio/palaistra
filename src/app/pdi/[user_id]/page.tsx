@@ -8,10 +8,21 @@ import { pdi_id } from '@/db/pdi/constants';
 import { Label } from '@/components/ui/label';
 
 import pdi_logo from '../pdi-logo.jpg';
-import { Attendance } from './attendance';
+import { Attendance } from './attedance';
+import { MarkAttendance } from './mark-attendance';
 import { QRCode } from './qr';
 
 type Params = Promise<{ user_id: string }>;
+
+export const generateStaticParams = async () => {
+  const enrollments = await db.query.enrollment.findMany({
+    where: (e, { eq, and }) => and(eq(e.palaistra_id, pdi_id)),
+  });
+
+  return enrollments.map((e) => ({ user_id: e.student_id }));
+};
+
+export const revalidate = 10800; // revalidate every three hours
 
 const Page = async (props: { params: Params }) => {
   const params = await props.params;
@@ -25,14 +36,16 @@ const Page = async (props: { params: Params }) => {
       group: true,
       category: true,
       sport: true,
+      attendance: true,
     },
   });
+
   if (!enrollment) return notFound();
 
-  const { student, category, group } = enrollment;
+  const { student, category, group, attendance } = enrollment;
 
   return (
-    <div className="mx-auto flex max-w-md flex-col items-center">
+    <div className="mx-auto flex min-h-[110vh] max-w-md flex-col items-center">
       <Image
         src={pdi_logo}
         width={200}
@@ -49,7 +62,6 @@ const Page = async (props: { params: Params }) => {
           }
         />
       </div>
-
       <div className="my-4 flex flex-col items-center">
         <p className="text-xl font-bold">{student.name}</p>
         <p className="text-sm">
@@ -60,22 +72,29 @@ const Page = async (props: { params: Params }) => {
             {turno.days.join(', ')} | {turno.start_time} - {turno.end_time}
           </p>
         ))}
+        <div className="mt-2 grid grid-cols-2 justify-between gap-8">
+          <div className="text-center">
+            <Label className="text-xs">Fecha de inicio</Label>
+            <p>{enrollment.starts_at}</p>
+          </div>
+          <div className="text-center">
+            <Label className="text-xs">Fecha de término</Label>
+            <p>{enrollment.ends_at}</p>
+          </div>
+        </div>
       </div>
+      <Attendance
+        start_date="2025-01-02"
+        active_days={group.schedule[0].days}
+        attendance={attendance.map((a) => ({
+          date: a.taken_at,
+          time: a.duration,
+        }))}
+      />
 
       <React.Suspense>
-        <Attendance user_id={user_id} />
+        <MarkAttendance />
       </React.Suspense>
-
-      <div className="mt-12 grid grid-cols-2 justify-between gap-8 text-xs">
-        <div>
-          <Label>Fecha de inicio</Label>
-          <p>{enrollment.starts_at}</p>
-        </div>
-        <div>
-          <Label>Fecha de término</Label>
-          <p>{enrollment.ends_at}</p>
-        </div>
-      </div>
     </div>
   );
 };

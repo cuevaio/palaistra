@@ -1,4 +1,4 @@
-export const days = ['L', 'M', 'X', 'J', 'V', 'S', 'D'] as const;
+export const days = ['D', 'L', 'M', 'X', 'J', 'V', 'S'] as const;
 export type Day = (typeof days)[number];
 
 export const roles = [

@@ -8,6 +8,8 @@ import { redis } from '@/db/redis';
 import { otp } from '@/lib/nanoid';
 import { resend } from '@/lib/resend';
 
+import { SigninCodeEmail } from './email';
+
 export type SigninActionState =
   | {
       ok: true;
@@ -46,10 +48,10 @@ export const signin = async (
     const oneTimePassword = otp();
 
     await resend.emails.send({
-      from: 'onboarding@updates.cueva.io',
+      from: 'palaistra@updates.cueva.io',
       to: parsedEmail.data,
-      subject: 'Your one-time password for WeightMates',
-      text: `Your one-time password for WeightMates is ${oneTimePassword} and will be available for the next 15 min.`,
+      subject: 'Tu código de Palaistra x PDI',
+      react: <SigninCodeEmail validationCode={oneTimePassword} />,
     });
 
     await redis.set(`user:${existingUserId}:otp`, oneTimePassword, {

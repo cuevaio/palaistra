@@ -3,11 +3,12 @@
 import React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
+import { toast } from 'sonner';
+
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 import { signin } from './signin.action';
-import { toast } from 'sonner';
 
 export default function Signin() {
   const router = useRouter();
