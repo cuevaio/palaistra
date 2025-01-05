@@ -82,10 +82,7 @@ async function registerStudent(input: StudentRegistrationInput) {
   // Add student to Redis
   await redis.set(`email:${student_email}:user:id`, student_id);
   await redis.hset(`user:${student_id}`, studentData);
-  await redis.sadd<Role>(
-    `membership|${student_id}|${pdi_id}`,
-    'student',
-  );
+  await redis.sadd<Role>(`membership|${student_id}|${pdi_id}`, 'student');
 
   // Add student membership
   await db.insert(schema.membership).values({
@@ -117,10 +114,7 @@ async function registerStudent(input: StudentRegistrationInput) {
       // Add parent to Redis
       await redis.set(`email:${input.email}:user:id`, parent_id);
       await redis.hset(`user:${parent_id}`, parentData);
-      await redis.sadd<Role>(
-        `membership|${parent_id}|${pdi_id}`,
-        'parent',
-      );
+      await redis.sadd<Role>(`membership|${parent_id}|${pdi_id}`, 'parent');
 
       // Create parental relationship
       await db.insert(schema.parental).values({
@@ -222,7 +216,7 @@ async function registerStudent(input: StudentRegistrationInput) {
   const qr_url = await createQR(`https://pdi.palaistra.com.pe/${student_id}`);
 
   await resend.emails.send({
-    from: 'PDI <palaistra-pdi@updates.cueva.io>',
+    from: 'PDI x Palaistra <welcome@pdi.palaistra.com.pe>',
     to: [input.parent_name ? input.email : student_email],
     subject:
       '¡Bienvenidos a las Clases de Natación! [Información Importante]' +
@@ -244,15 +238,14 @@ async function registerStudent(input: StudentRegistrationInput) {
   };
 }
 
-
 await registerStudent({
-  student_name: "Camilo Flores",
-  email: "lriverav84@gmail.com",
-  category: "Niños",
-  group: "Dominical",
-  months: "Ene",
-  days: "D",
-  start_time: "13:00",
-  end_time: "15:00",
-  parent_name: "Liz Rivera Valverde"
-})
+  student_name: 'Camilo Flores',
+  email: 'lriverav84@gmail.com',
+  category: 'Niños',
+  group: 'Dominical',
+  months: 'Ene',
+  days: 'D',
+  start_time: '13:00',
+  end_time: '15:00',
+  parent_name: 'Liz Rivera Valverde',
+});

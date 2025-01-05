@@ -77,7 +77,7 @@ export const signup = async (
     const oneTimePassword = otp();
 
     await resend.emails.send({
-      from: 'palaistra@updates.cueva.io',
+      from: 'PDI x Palaistra <pdi@auth.palaistra.com.pe>',
       to: parsedEmail.data,
       subject: 'Your one-time password for Palaistra',
       text: `Your one-time password for Palaistra is ${oneTimePassword} and will be available for the next 15 min.`,

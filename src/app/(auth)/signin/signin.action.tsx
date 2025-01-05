@@ -48,7 +48,7 @@ export const signin = async (
     const oneTimePassword = otp();
 
     await resend.emails.send({
-      from: 'palaistra@updates.cueva.io',
+      from: 'PDI x Palaistra <pdi@auth.palaistra.com.pe>',
       to: parsedEmail.data,
       subject: 'Tu código de Palaistra x PDI',
       react: <SigninCodeEmail validationCode={oneTimePassword} />,

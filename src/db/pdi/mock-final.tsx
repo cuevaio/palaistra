@@ -352,7 +352,7 @@ async function populateDatabase() {
 
   await resend.batch.send(
     students.map((student) => ({
-      from: 'PDI <palaistra-pdi@updates.cueva.io>',
+      from: 'PDI x Palaistra <welcome@pdi.palaistra.com.pe>',
       to: [student.parent_email || student.email],
       subject:
         '¡Bienvenidos a las Clases de Natación! [Información Importante]' +
