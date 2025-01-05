@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { db } from '@/db';
 import { pdi_id } from '@/db/pdi/constants';
 
+import { buttonVariants } from '@/components/ui/button';
 import {
   Table,
   TableBody,
@@ -11,6 +12,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+
+import { cn } from '@/lib/utils';
 
 export const revalidate = 300; // revalidate every 5 minutes
 
@@ -42,8 +45,12 @@ const Page = async () => {
             ({ student, category, group, starts_at, ends_at }) => (
               <TableRow key={student.id} className="relative">
                 <TableCell>
-                  {student.name}
-                  <Link className="absolute inset-0" href={`/${student.id}`} />
+                  <Link
+                    className={cn(buttonVariants({ variant: 'link' }))}
+                    href={`/${student.id}`}
+                  >
+                    {student.name}
+                  </Link>
                 </TableCell>
                 <TableCell>
                   {category.name} - {group.name}
