@@ -9,7 +9,7 @@ export default async function AuthLayout({
 }) {
   return (
     <div className="grid h-screen w-screen grid-cols-2">
-      <div className="mx-auto flex max-w-md flex-col items-center justify-center gap-4">
+      <div className="min- mx-auto flex max-w-md flex-col items-center justify-center gap-4">
         <h1 className="text-xl font-bold">PDI</h1>
         <p className="text-sm text-muted-foreground">Escuela de natación</p>
 

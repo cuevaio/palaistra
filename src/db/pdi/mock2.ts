@@ -2,6 +2,7 @@ import Papa from 'papaparse';
 
 import { Day, Role } from '@/lib/constants';
 import { id } from '@/lib/nanoid';
+import { resend } from '@/lib/resend';
 
 import { db, schema } from '..';
 import { redis } from '../redis';
@@ -97,12 +98,14 @@ async function populateDatabase() {
     {
       name: 'Diego Alarcón',
       email: 'diego.alarcon@utec.edu.pe',
+      id: 'DDDDDDDDDDDD',
     },
     {
       name: 'Anthony Cueva',
       email: 'hi@cueva.io',
+      id: 'AAAAAAAAAAAA',
     },
-  ].map((x) => ({ ...x, id: id() }));
+  ];
 
   await db.insert(schema.user).values(admins);
   await db.insert(schema.membership).values(
@@ -258,6 +261,16 @@ async function populateDatabase() {
         },
       );
     }),
+  );
+
+  await resend.batch.send(
+    students.map((student) => ({
+      from: 'PDI <palaistra-pdi@updates.cueva.io>',
+      to: [student.email],
+      subject: '¡Bienvenidos a las Clases de Natación! Información Importante',
+      html: `<p>Hola <strong>${student.name}</strong></p>
+      <p>Ingresa a <a href="https://pdi.palaistra.com.pe">https://pdi.palaistra.com.pe</a> con este correo :)</p>`,
+    })),
   );
 }
 

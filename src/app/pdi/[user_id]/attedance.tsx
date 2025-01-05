@@ -99,7 +99,7 @@ export const Attendance = ({
                               (d) =>
                                 new Date(d.date + 'Z').getDate() ===
                                 date.getDate(),
-                            ) && 'bg-orange-500/60'),
+                            ) && 'bg-blue-500/60'),
                     )}
                   >
                     {date.getDate()}

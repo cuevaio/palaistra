@@ -69,13 +69,13 @@ export const markAttendance = async (
       category_id: enrollment.category_id,
       sport_id: enrollment.sport_id,
       palaistra_id: enrollment.palaistra_id,
-      // taken_at: new Date(new Date().getTime() + 4 * 24 * 60 * 60 * 1000).toISOString(),
 
       enrollment_id: enrollment.id,
       duration,
     });
 
     revalidatePath(`/${enrollment.student_id}`);
+
     return {
       success: true,
       form,

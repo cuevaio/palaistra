@@ -281,6 +281,7 @@ export const attendance = pgTable('attendance', {
     .defaultNow()
     .notNull(),
 });
+
 export const attendaceRelations = relations(attendance, ({ one }) => ({
   student: one(user, {
     fields: [attendance.student_id],
@@ -336,3 +337,5 @@ export type EnrollmentInsert = typeof enrollment.$inferInsert;
 export const PalaistraInsertSchema = createInsertSchema(palaistra);
 export const CategoryInsertSchema = createInsertSchema(category);
 export const GroupInsertSchema = createInsertSchema(group);
+
+

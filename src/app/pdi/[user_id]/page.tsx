@@ -11,6 +11,8 @@ import pdi_logo from '../pdi-logo.jpg';
 import { Attendance } from './attedance';
 import { MarkAttendance } from './mark-attendance';
 import { QRCode } from './qr';
+import { Button } from '@/components/ui/button';
+import { logout } from '@/app/(auth)/logout.action';
 
 type Params = Promise<{ user_id: string }>;
 
@@ -96,6 +98,11 @@ const Page = async (props: { params: Params }) => {
       <React.Suspense>
         <MarkAttendance student_id={user_id} />
       </React.Suspense>
+
+
+      <form action={logout}>
+        <Button type='submit'>Cerrar sesión</Button>
+      </form>
     </div>
   );
 };
