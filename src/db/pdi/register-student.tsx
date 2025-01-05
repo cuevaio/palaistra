@@ -246,13 +246,13 @@ async function registerStudent(input: StudentRegistrationInput) {
 
 
 await registerStudent({
-  student_name: "Irma Paredes",
-  email: "hi.cuevantn@gmail.com",
-  category: "Básico",
-  group: "Noche",
+  student_name: "Camilo Flores",
+  email: "lriverav84@gmail.com",
+  category: "Niños",
+  group: "Dominical",
   months: "Ene",
-  days: "L,M,X,J,V",
-  start_time: "19:00",
-  end_time: "20:00",
-  parent_name: "Anthony Cueva"
+  days: "D",
+  start_time: "13:00",
+  end_time: "15:00",
+  parent_name: "Liz Rivera Valverde"
 })

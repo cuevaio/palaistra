@@ -12,7 +12,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-export const revalidate = 10800; // revalidate every three hours
+export const revalidate = 300; // revalidate every 5 minutes
 
 const Page = async () => {
   const enrollments = await db.query.enrollment.findMany({

@@ -2,7 +2,7 @@ import { Role } from '@/lib/constants';
 
 import { db, schema } from '..';
 import { redis } from '../redis';
-import { MembershipInsert, palaistra } from '../schema';
+import { MembershipInsert } from '../schema';
 import { pdi_id } from './constants';
 
 const admins: {
@@ -34,7 +34,7 @@ await Promise.all(
     await redis.set(`email:${admin.email}:user:id`, admin.id);
     await redis.hset(`user:${admin.id}`, admin);
     await redis.sadd<Role>(
-      `membership|${admin.id}|${palaistra.id}`,
+      `membership|${admin.id}|${pdi_id}`,
       'admin',
       'teacher',
     );
