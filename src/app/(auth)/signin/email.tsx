@@ -33,7 +33,7 @@ export const SigninCodeEmail = ({
             </Column>
             <Column align="right">
               <Img
-                src={'https://palaistra.com.pe/pdi-logo.jpg'}
+                src={'https://palaistra.com.pe/logo-pdi.jpg'}
                 width="200"
                 height="200"
                 alt="PDI"
