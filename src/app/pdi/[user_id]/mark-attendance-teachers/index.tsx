@@ -13,10 +13,10 @@ import { cn } from '@/lib/utils';
 
 import { MarkAttendanceButton } from './client';
 
-export const MarkAttendance = async ({
-  student_id,
+export const MarkAttendanceTeachers = async ({
+  teacher_id,
 }: {
-  student_id: string;
+  teacher_id: string;
 }) => {
   const auth = await getUserAndSession();
 
@@ -28,12 +28,12 @@ export const MarkAttendance = async ({
 
   if (!isAdmin) return null;
 
-  const attendance = await db.query.attendance.findFirst({
+  const attendance = await db.query.teacher_attendance.findFirst({
     columns: {
       created_at: true,
     },
     where: (a, { eq, and }) =>
-      and(eq(a.palaistra_id, pdi_id), eq(a.student_id, student_id)),
+      and(eq(a.palaistra_id, pdi_id), eq(a.teacher_id, teacher_id)),
     orderBy: (a, { desc }) => desc(a.created_at),
   });
 

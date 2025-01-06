@@ -13,7 +13,9 @@ import { Label } from '@/components/ui/label';
 
 import pdi_logo from '../logo-pdi.jpg';
 import { Attendance } from './attedance';
-import { MarkAttendance } from './mark-attendance';
+import { AttendanceTeachers } from './attedance-teachers';
+import { MarkAttendanceStudents } from './mark-attendance-students';
+import { MarkAttendanceTeachers } from './mark-attendance-teachers';
 import { QRCode } from './qr';
 
 type Params = Promise<{ user_id: string }>;
@@ -46,6 +48,14 @@ const Page = async (props: { params: Params }) => {
   if (!membership?.user) return notFound();
 
   if (membership.roles.includes('teacher')) {
+    const teacher = membership.user;
+
+    const attendance = await db.query.teacher_attendance.findMany({
+      where: (a, { eq, and }) =>
+        and(eq(a.palaistra_id, pdi_id), eq(a.teacher_id, teacher.id)),
+      orderBy: (a, { desc }) => desc(a.created_at),
+    });
+
     return (
       <div className="mx-auto flex min-h-[110vh] max-w-md flex-col items-center">
         <Image
@@ -56,11 +66,21 @@ const Page = async (props: { params: Params }) => {
           className="m-10"
         />
         <div className="w-64">
-          <QRCode url={`http://pdi.palaistra.com.pe/${user_id}`} />
+          <QRCode url={`http://pdi.palaistra.com.pe/${teacher.id}`} />
         </div>
-
+        <div className="my-4 flex flex-col items-center">
+          <p className="text-xl font-bold">{teacher.name}</p>
+          <p>Profesor</p>
+        </div>
+        <AttendanceTeachers
+          attendance={attendance.map((x) => ({
+            id: x.id,
+            date: x.taken_at,
+            time: x.duration,
+          }))}
+        />
         <React.Suspense>
-          <MarkAttendance student_id={user_id} />
+          <MarkAttendanceTeachers teacher_id={teacher.id} />
         </React.Suspense>
 
         <form action={logout}>
@@ -118,7 +138,7 @@ const Page = async (props: { params: Params }) => {
           </div>
         </div>
         <Attendance
-          start_date="2025-01-02"
+          start_date={enrollment.starts_at}
           active_days={group.schedule[0].days}
           attendance={attendance.map((a) => ({
             id: a.id,
@@ -128,7 +148,7 @@ const Page = async (props: { params: Params }) => {
         />
 
         <React.Suspense>
-          <MarkAttendance student_id={user_id} />
+          <MarkAttendanceStudents student_id={user_id} />
         </React.Suspense>
 
         <form action={logout}>

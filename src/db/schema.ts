@@ -344,7 +344,7 @@ export const attendaceRelations = relations(attendance, ({ one }) => ({
 export const teacher_attendance = pgTable('teacher_attendance', {
   id: varchar('id', { length: 12 }).primaryKey(),
 
-  student_id: varchar('student_id', { length: 12 })
+  teacher_id: varchar('teacher_id', { length: 12 })
     .references(() => user.id)
     .notNull(),
   admin_id: varchar('admin_id', { length: 12 })
@@ -353,6 +353,16 @@ export const teacher_attendance = pgTable('teacher_attendance', {
 
   palaistra_id: varchar('palaistra_id', { length: 12 })
     .references(() => palaistra.id)
+    .notNull(),
+
+  taken_at: timestamp('taken_at', { mode: 'string' }).defaultNow().notNull(),
+  duration: time('duration').notNull(),
+
+  created_at: timestamp('created_at', { mode: 'string' })
+    .defaultNow()
+    .notNull(),
+  updated_at: timestamp('updated_at', { mode: 'string' })
+    .defaultNow()
     .notNull(),
 });
 
