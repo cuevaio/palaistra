@@ -355,6 +355,9 @@ export const landing_page_contacts = pgTable('landing_page_contacts', {
 // Types
 export type UserSelect = typeof user.$inferSelect;
 export type PalaistraSelect = typeof palaistra.$inferSelect;
+export type CategorySelect = typeof category.$inferInsert;
+export type GroupSelect = typeof group.$inferSelect;
+export type EnrollmentSelect = typeof enrollment.$inferSelect;
 
 export type CategoryInsert = typeof category.$inferInsert;
 export type GroupInsert = typeof group.$inferInsert;

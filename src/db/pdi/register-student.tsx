@@ -121,6 +121,12 @@ async function registerStudent(input: StudentRegistrationInput) {
         parent_id,
         student_id,
       });
+
+      await db.insert(schema.membership).values({
+        palaistra_id: pdi_id,
+        user_id: parent_id,
+        roles: ['parent'],
+      });
     }
   }
 
@@ -239,13 +245,13 @@ async function registerStudent(input: StudentRegistrationInput) {
 }
 
 await registerStudent({
-  student_name: 'Camilo Flores',
-  email: 'lriverav84@gmail.com',
+  student_name: 'Dominic Ismael Arzola Peña',
+  email: 'luz200384@hotmail.com',
   category: 'Niños',
   group: 'Dominical',
   months: 'Ene',
   days: 'D',
   start_time: '13:00',
   end_time: '15:00',
-  parent_name: 'Liz Rivera Valverde',
+  parent_name: 'Luz de Maria Peña Sanchez',
 });
