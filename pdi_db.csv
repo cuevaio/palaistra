@@ -1,14 +1,88 @@
-student_name,student_dni,student_birthdate,months,days,start_time,end_time,category,group,email,phone,parent_name
-Liam Javier Noled Rodriguez,91754759,3/2/2020,Ene,D,13:00,15:00,Niños,Dominical,jackr185@gmail.com,968712175,Elvis Nole Rodriguez 
-Lua Cuenca Peralta,93183384,12/18/2022,Ene,D,13:15,14:00,Niños,Dominical 2,carlosmauriciocuencarios@gmail.com,934242889,Carlos Mauricio Cuenca Rios
-Khanum Cabrera,90428061,11/9/2017,Ene,"M,D",13:15,14:00,Niños,Custom 1,rebeca_bp@hotmail.com,941105647,Rebeca Bedriñana Peralta
-Sebastián Gálvez Susaya ,78491330,3/4/2014,Ene,D,13:00,15:00,Niños,Dominical,Elisu0911@gmail.com,917276947,Gaby Susaya 
-Gabriel Gálvez Susaya,79769322,7/11/2016,Ene,D,13:00,15:00,Niños,Dominical,Elisu0911@gmail.com,917276947,Gaby Susaya 
-Gerardo Mercado ,90797616,5/4/2018,Ene,D,13:00,15:00,Niños,Dominical,crikme84@gmail.com,987111054,Erik Mercado
-Fernanda Mercado,78757795,9/15/2014,Ene,D,13:00,15:00,Niños,Dominical,crikme84@gmail.com,987111054,Erik Mercado
-Haydé Guzmán,41233386,1/11/1982,Ene,D,13:00,15:00,Niños,Dominical,crikme84@gmail.com,987111054,Erik Mercado
-Javier Huaroto,93091406,,Ene,D,13:15,14:00,Niños,Dominical 2,sandris_1023@hotmail.com,93091406,Diego Miguel Huaroto Larrea
-Diego Alarcon,71458698,02/11/2001,Ene,D,16:00,18:00,Avanzado,Noche,dabus.38@hotmail.com,972343025,
-Franchesca Huapaya Ticse,70502507,1/26/1995,Ene,D,13:00,15:00,General,Dominical,franchescahuapaya@gmail.com,933543162,
-Antonella Carhuas,77591027,9/18/2022,Ene,D,13:15,14:00,Niños,Dominical 2,jramirezlaupa@gmail.com,982633164,Jessica Ramirez Laupa 
-Sammir Carhuas	,77591027,3/6/2012,Ene,D,13:00,15:00,Niños,Dominical,jramirezlaupa@gmail.com,982633164,Jessica Ramirez Laupa 
+student_name,months,days,start_time,end_time,category,group,student_birthdate,email,student_dni,parent_name,phone
+Fabián Mateo Monteza Cachay,Ene - Feb,"L,X,V",14:00,15:00,Niños,Segundo turno,12/09/2019,perezestrella050@gmail.com,91502429,Estrella Cachay Pérez ,956360609
+Yhamil Yaret Chacón Huamani,Ene - Feb,"M,J",14:00,15:00,Niños,Segundo turno,01/06/2013,jhajaira27013@gmail.com,78129982,Jhajaira Huamani Liza,951781732
+Lucyana Martinez Valdez,Ene - Feb,"L,X,V",14:00,15:00,Niños,Segundo turno,12/31/2019,lucyanabelvaldez@gmail.com,91659258,Lucy Valdez Romero,984719635
+Yul Granjeda,Ene,"L,M,X,J,V",18:00,19:00,Semillero,B,6/11/2011,gamyservice201175@gmail.com,77561495,Marisol Almendrades Torrel,955232372
+Matteo Cruzado,Ene,"L,X,V",14:00,15:00,Niños,Segundo turno,11/04/2020,betsabet180@gmail.com,72901833,Betsabet Tapia,940005480
+Santiago Arenas,Ene,"L,X,V",14:00,15:00,Niños,Segundo turno,7/8/2019,sofiaa.arenass.05@gmail.com,81852925,Zila Avida Cosme Delgadillo,971018534
+Varun Bustos,Ene,"M,J",13:00,14:00,Niños,Primer turno,5/7/2017,brendiiz2204@gmail.com,90673840,Brenda Tasayco Huamán ,958220243
+Nereyda Talavera,Ene,D,13:00,15:00,Adultos,Primer turno,3/15/1982,nereyda.talavera1@gmail.com ,42268437,Ninguno,980539090
+Sofia Cornejo,Ene,"L,M,X,J,V",18:00,19:00,Semillero,B,8/2/2012,jennynietoa@gmail.com,77775743,Jenny Nieto ,966420458
+Gianella Cornejo,Ene,"L,M,X,J,V",18:00,19:00,Semillero,B,9/27/2015,jennynietoa@gmail.com,79319656,Jenny Nieto ,966420458
+Alejandro de la Cruz Tapia,Ene,"L,X,V",14:00,15:00,Niños,Segundo turno,9/05/2016,risco21182@gmail.com,79691731,Leslie Tapia Risco ,994100920
+Samuel Lazaro de la Cruz,Ene,"L,X,V",14:00,15:00,Niños,Segundo turno,9/09/2019,stephaniedelacruz832@gmail.com,91496820,Stephanie De La Cruz ,91496820
+Dylan Jesús Pérez Abriojo ,Ene - Feb,"M,J",13:00,14:00,Niños,Primer turno,3/04/2016,milagrosabriojo41@gmail.com,79620490,Milagros Abriojo Lozano ,983589547
+Samuel Mateo Rojas,Ene,"L,X,V",13:00,14:00,Niños,Primer turno,15/07/2010,rojasmacedosamuelmateo@gmail.com,74342205,Elizabeth Macedo Requena,941005761
+Liam Javier Noled Rodriguez,Ene,D,13:00,15:00,Niños,Primer turno,3/2/2020,jackr185@gmail.com,91754759,Elvis Nole Rodriguez ,968712175
+Franchesca Huapaya Ticse,Ene,D,13:00,15:00,Adultos,Primer turno,1/26/1995,franchescahuapaya@gmail.com,70502507,Ninguno,933543162
+Gisel Cupe Miranda,Ene,"L,X,V",14:00,15:00,Niños,Segundo turno,2/8/2019,lcupeto33@gmail.com,43134342,Luis Favio Cupe Torres,979727911
+Gianfranco Abanto Rodriguez,Ene,"M,J",13:00,14:00,Niños,Primer turno,5/17/2019,milagrosrodrigueztorres11@gmail.com,91328805,Milagros Rodríguez torres ,984784511
+Santiago Abanto Rodriguez,Ene,"M,J",13:00,14:00,Niños,Primer turno,2/27/2017,milagrosrodrigueztorres11@gmail.com,90128715,Jaime Abanto Rodríguez ,980670921
+Joaquin Solorzano Espinoza,Ene,"L,X,V",13:00,14:00,Niños,Primer turno,11/23/2014,cynthiaveranisaespinoza@gmail.com,78860677,CYNTHIA VERANISA ESPINOZA QUINTEROS,918879136
+Luciana Suarez Rodriguez,Ene - Feb,"L,X,V",14:00,15:00,Niños,Segundo turno,1/16/2017,monicarodriguez611@gmail.com,90036436,Mónica Rodríguez ,991313553
+Ariana Arroyo Campos,Ene,"L,X,V",18:00,19:00,Niños,Tercer turno,12/2/2019,mijailac@gmail.com,91619313,Mijail Arroyo Campos,984781349
+Raphael Sanchez Pano,Ene,"M,J",13:00,14:00,Niños,Primer turno,3/3/2019,fernandopano@gmail.com ,91267934,Trinidad Pano ,961853239
+Ximena Cornejo Irribarren,Ene,"L,X,V",13:00,14:00,Niños,Primer turno,10/28/2017,irribarrendiana54@gmail.com,90461086,Diana Irribarren,936499396
+Mariapaz Cornejo Irribarren,Ene,"L,X,V",13:00,14:00,Niños,Primer turno,11/3/2019,irribarrendiana54@gmail.com,91573576,Diana irribarren ,936499396
+Daryen Mogollón Alegría,Ene,"L,X,V",13:00,14:00,Niños,Primer turno,7/1/2017,donaao@hotmail.com,90301185,Dona Yenli Alegría Otaegui ,960965285
+Cayetana Thais Diaz Aquino,Ene,"L,X,V",13:00,14:00,Niños,Primer turno,6/16/2024,nei.ra24.n@gmail.com,45315909,Noelia Aquino Bonilla ,992568329
+Bruno Vega Chipana,Ene,"L,X,V",13:00,14:00,Niños,Primer turno,5/28/2017,kathy.chipana36@gmail.com,90247488,Kathy CHIPANA ,939997408
+Rafaela Bustos,Ene,"M,J",13:00,14:00,Niños,Primer turno,3/9/2019,brendiiz2204@gmail.com,90673840,Brenda Tasayco Huamán ,958220243
+Fabiano Gomez Cabrera,Ene,"X,V",14:00,15:00,Niños,Segundo turno,12/25/2018,pecv.cvaldiviesoa@gmail.com,46800233,Patricia Cabrera Valdivieso ,931094060
+Diego Córdova Turpo,Ene,"L,X,V",13:00,14:00,Niños,Primer turno,12/24/2012,jentur2021@gmail.com,77940698,Jenny Turpo ,970887178
+Samuel Vela Cabrera,Ene,"L,X,V",13:00,14:00,Niños,Primer turno,12/3/2010,danielvelaa@gmail.com,75046321,Carla Cabrera García ,997880567
+Elieth Quispe,Ene,"L,X,V",13:00,14:00,Niños,Primer turno,7/10/2019,carulisseth@gmail.com,91436306,Lisseth Carrera Ruiz ,930951683
+Ania Quispe,Ene,"L,X,V",13:00,14:00,Niños,Primer turno,11/17/2021,carulisseth@gmail.com,92629507,Lisseth Carrera Ruiz,930951683
+Luka Cachai Mori,Ene,"L,X,V",13:00,14:00,Niños,Primer turno,7/26/2019,cachaymauro7@gmail.com,81854636,Paula Mori Pizango,991477118
+Facundo Serra Manrique,Ene - Feb,"L,X,V",13:00,14:00,Niños,Primer turno,12/30/2015,claupim8014@gmail.com,79452442,Jose Luis Serra Garcia,987780834
+Josue Muro Mauricio,Ene - Feb,"L,X,V",14:00,15:00,Niños,Segundo turno,12/20/2017,dayannem@hotmail.com,90554823,DANITZA MAURICIO ,987110190
+Gaetana Ore Garcia,Ene - Feb,"L,X,V",13:00,14:00,Niños,Primer turno,9/6/2018,ore.skydive@gmail.com,90948621,ALEXHA GARCÍA TELLO,997019731
+Lua Cuenca Peralta,Ene,D,13:15,14:00,AquaBaby,Primer turno,12/18/2022,carlosmauriciocuencarios@gmail.com,93183384,Carlos Mauricio Cuenca Rios,934242889
+Abigail Cherres,Ene,"M,J",13:00,14:00,Niños,Primer turno,9/11/2014,drojaspimentel@gmail.com,78763506,Dayana Rojas Pimentel,997813307
+Valeria Becerra,Ene - Feb,"M,J",13:00,14:00,Niños,Primer turno,9/9/2019,jennyvic1111@hotmail.com ,91502736,Jennifer Esther Ruiz Ruiz ,989630390
+Valentino  Diaz,Ene,"L,M,X,J,V",18:00,19:00,Semillero,B,11/3/2012,mishel1523@hotmail.com ,70065938,Tania Cachique Ruiz,940 764 701 
+Joaquin Diaz,Ene,"L,X,V",14:00,15:00,Niños,Segundo turno,3/15/2010,mishel1523@hotmail.com ,70065938,Tania Cachique Ruiz,940764701
+Zoe Danielis,Ene,"L,X,V",14:00,15:00,Niños,Segundo turno,3/15/2010,mishel1523@hotmail.com ,70065938,Tania Cachique Ruiz,940764701
+Khanum Cabrera,Ene,"M,D",13:00,14:00,Niños,Primer turno,11/9/2017,rebeca_bp@hotmail.com,90428061,Rebeca Bedriñana Peralta,941105647
+Sebastián Ferrer,Ene,"L,X,V",13:00,14:00,Niños,Primer turno,1/3/2014,gloriav.latorre@gmail.com,78394022,Victoria La Torre,943837719
+Carolina Pintado Ramos,Ene - Feb                ,"L,X,V",13:00,14:00,Niños,Primer turno,11/11/2013,claudiapaolar37@gmail.com,78336548,Claudia Ramos Caycho ,993397293
+Sebastián Gálvez Susaya ,Ene,D,13:00,15:00,Niños,Primer turno,3/4/2014,elisu0911@gmail.com,79769322,Gaby susaya ,917276947
+Gabriel Gálvez Susaya,Ene,D,13:00,15:00,Niños,Primer turno,7/11/2016,elisu0911@gmail.com,78491330,Gaby susaya ,917276947
+Grace Paucar,Ene,"L,M,X,J,V",18:00,19:00,Semillero,B,9/5/2013,yojanaper.202@gmail.com ,78260797,Elizabeth Zuñiga ,989740052 
+Gerardo Mercado ,Ene,D,13:00,15:00,Niños,Primer turno,5/4/2018,crikme84@gmail.com,90797616,Erik Mercado,987111054
+Fernanda Mercado,Ene,D,13:00,15:00,Niños,Primer turno,9/15/2014,crikme84@gmail.com,78757795,Erik Mercado,987111054
+Haydé Guzmán,Ene,D,13:00,15:00,Adultos,Primer turno,1/11/1982,crikme84@gmail.com,41233386,Erik Mercado,987111054
+Adrián Peña,Ene,"M,J",14:00,15:00,Niños,Segundo turno,12/18/2016,hatmy_18@hotmail.com,90012171,Shirley Insa Arrieta ,978393491
+Gia Canales,Ene,"L,M,X,J,V",14:00,15:00,Semillero,D,8/28/2018,trn_man@hotmail.com,90934863,RENZO CANALES GALARRETA,918791783
+Javier Huaroto,Ene,D,13:15,14:00,AquaBaby,Primer turno,,sandris_1023@hotmail.com,Jessica Ramirez Laupa ,Diego Miguel Huaroto Larrea,93091406
+Manuel Canales,Ene		,"L,X,V",13:00,14:00,Niños,Primer turno,,gbarrios_4@hotmail.com,78151099,Glenda Barrios,997013952
+Antonia Canales,Ene		,"L,X,V",13:00,14:00,Niños,Primer turno,,gbarrios_4@hotmail.com,91110702,Glenda Barrios ,997013952
+Nataly Andrade,Ene - Feb		,"L,X,V",13:00,14:00,Niños,Primer turno,,edithaburtope@gmail.com,09911275,Edith Mirian Aburto Perez ,985289268
+Sofía Castillo Guerrero,Ene,"M,J",13:00,14:00,Niños,Primer turno,2/21/2020,jcca.2511@gmail.com,91739507,Amparo Guerrero Quiñones,970855379
+Ethan Anicama Agasajando        ,Ene,"M,J",13:00,14:00,Niños,Primer turno,4/26/2020,pilar.fasanando@gmail.com,91830382,Pilar Fasanando Tapullima ,982111405
+Hannah Gutiérrez Ramos,Ene,"M,J,V",13:00,14:00,Niños,Primer turno,7/12/2021,xhans1830x@gmail.com,92445329,Hans Elliott Gutierrez Guerrero,965319844
+Nihal Rojas	,Ene,"M,J",13:00,14:00,Niños,Primer turno,1/31/2015,beyitnihal2331@gmail.com,79001026,Esther j. Yupanqui Laura ,941510020
+Antonella Carhuas,Ene,D,13:15,14:00,AquaBaby,Primer turno,9/18/2022,jramirezlaupa@gmail.com,77591027,Jessica Ramirez Laupa ,982633164
+Sammir Carhuas	,Ene,D,13:00,15:00,Niños,Primer turno,3/6/2012,jramirezlaupa@gmail.com,77591027,Jessica Ramirez Laupa ,982633164
+Mijael Pedraza	,Ene,"L,X,V",14:00,15:00,Niños,Segundo turno,8/16/2015,teresa.160815@gmail.com,79250286,Teresa Pedraza Bustamante ,956908296
+Camilo Flores ,Ene,D,13:00,15:00,Niños,Primer turno,3/17/2021,lriverav84@gmail.com,92312162,Liz Rivera Valverde y Carlos Flores,977517934
+Micaela Suquilanda Hinostroza,Ene		,"L,X",13:00,14:00,Niños,Primer turno,2/15/2015,jozz.hc@gmail.com,78977611,Josselyn Margarita Jesús Hinostroza Cossio ,967403993
+Maria Jose Suquilanda Hinostroza,Ene		,"L,X",13:00,14:00,Niños,Primer turno,3/4/2017,tectum89@gmail.com,90107601,Josselyn Margarita Jesús Hinostroza Cossio ,967403993
+Rosemberg Jacob Reategui Espichan,Ene - Feb,"L,X,V",13:00,14:00,Niños,Primer turno,8/31/2018,rore147@gmail.com,90949620,Aldryn Reategui ,942982238
+Thiago Sebastian Zavala Espinoza,Ene,"L,X",13:00,14:00,Niños,Primer turno,7/22/2013,lizeq2207@gmail.com,78182817,Lizbeth Espinoza ,993533228
+Alvaro Josue Avendaño Rodriguez,Ene,"M,J",14:00,15:00,Niños,Segundo turno,6/17/2021,azucenarodriguezen@gmail.com,92408023,Azucena Rodríguez Encarnaciòn,969216200
+Leonardo Huaman,Ene,"L,M,X,J,V",19:00,20:00,Semillero,A,11/12/2010,claudiapaola.13@gmail.com,75043791,Claudia Rubio Rojas,959218109
+Josueh Barrientos Echenique,Ene - Feb,"L,X,V",14:00,15:00,Niños,Segundo turno,12/10/2018,mbarrientos.xdb@gmail.com,91104304,ANGELA XIMENA ECHENIQUE CALI,986933679
+Luis Huapaya,Ene,"L,M,X,J,V",18:00,19:00,Semillero,C,5/14/2012,rbksea@gmail.com,77643599,Rebeca Enriquez Albornoz,995313921
+Dominic Ygnacio Pagara,Ene,"L,M,X,J,V",18:00,19:00,Semillero,B,10/23/2013,kathy030705@gmail.com,78310958,María Milagros Purizaca Castillo,973 485 191
+Adrian Laupa,Ene,"L,X,V",18:00,19:00,Niños,Tercer turno,4/8/2013,roger.laupa@fremet.com.pe,78062088,Roger Laupa ,915101246
+Roma Laupa,Ene,D,13:15,14:00,AquaBaby,Primer turno,3/30/2019,roger.laupa@fremet.com.pe,91267675,ROGER LAUPA,915101246
+Isabella Crispin del Rosario,Ene,"L,X,V",13:00,14:00,Niños,Primer turno,6/20/2018,giovanajibaja@gmail.com,90838381,Giovanna Jibaja Soria ,933132092
+Brian Ygnacio,Ene,"L,M,X,J,V",18:00,19:00,Semillero,B,2/27/2014,cedith22@hotmail.com,78476016,Celia Ramírez Luna ,994932285
+Gabriel Ygnacio,Ene,"L,M,X,J,V",18:00,19:00,Semillero,B,8/24/2015,cedith22@hotmail.com,79259552,Celia Ramírez Luna ,994932285
+Nikolas Ramirez,Ene,"L,M,X,J,V",19:00,20:00,Semillero,A,2/9/2010,jannetpautrat@gmail.com,25766943,Jannet Pautrat García ,971945948
+Olenka Ramirez,Ene,"L,M,X,J,V",19:00,20:00,Semillero,A,9/27/2014,jannetpautrat@gmail.com,25766943,Jannet Pautrat García ,971945948
+Leandro Sánchez,Ene,D,13:00,15:00,Niños,Primer turno,5/10/2018,yossy1893@gmail.com,73762867,Yossy Ortiz Vásquez ,949233995
+Abby Pedraza,Ene - Feb,"L,X,V",14:00,15:00,Niños,Segundo turno,8/21/2015,ruthpb21@gmail.com ,79266042,Ruth Bustamante Bernal de Pedraza ,943167706
+Hugo Molina,Ene,"L,X,V",13:00,14:00,Niños,Primer turno,2/18/2016,molinanh3@hotmail.com,79529717,Jessica Canales Rivadeneyra,991343890
+Luna Bedon Cubas,Ene,"L,X,V",13:00,14:00,Niños,Primer turno,7/27/2020,yrenecubas1728@gmail.com,91947422,Faustina Melo cazorla ,907034021

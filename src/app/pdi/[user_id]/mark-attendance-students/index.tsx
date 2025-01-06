@@ -43,6 +43,12 @@ export const MarkAttendanceStudents = async ({
       <Link className={cn(buttonVariants({ variant: 'link' }))} href="/">
         Ir a página de alumnos
       </Link>
+      <Link
+        className={cn(buttonVariants({ variant: 'link' }))}
+        href="/teachers"
+      >
+        Ir a página de profesores
+      </Link>
     </div>
   );
 };
