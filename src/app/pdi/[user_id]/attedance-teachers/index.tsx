@@ -13,6 +13,8 @@ import {
 } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
+import { cn } from '@/lib/utils';
+
 import { RemoveAttendanceDialog } from './remove';
 
 export const AttendanceTeachers = ({
@@ -54,6 +56,24 @@ export const AttendanceTeachers = ({
           <Calendar
             mode="multiple"
             selected={attendance.map((x) => new Date(x.date + 'Z'))}
+            components={{
+              DayContent: (props) => {
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                const { date, activeModifiers, displayMonth, ...tdProps } =
+                  props;
+                return (
+                  <span
+                    {...tdProps}
+                    className={cn(
+                      'flex h-full w-full items-center justify-center',
+                      activeModifiers.selected && 'bg-green-500/60',
+                    )}
+                  >
+                    {date.getDate()}
+                  </span>
+                );
+              },
+            }}
           />
         </TabsContent>
         <TabsContent
