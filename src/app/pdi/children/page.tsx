@@ -13,6 +13,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 const Page = async () => {
   const auth = await getUserAndSession();
@@ -38,8 +40,12 @@ const Page = async () => {
           {children.map(({ student }) => (
             <TableRow key={student.id} className="relative">
               <TableCell>
-                {student.name}
-                <Link className="absolute inset-0" href={`/${student.id}`} />
+                <Link
+                  className={cn(buttonVariants({ variant: 'link' }))}
+                  href={`/${student.id}`}
+                >
+                  {student.name}
+                </Link>
               </TableCell>
             </TableRow>
           ))}

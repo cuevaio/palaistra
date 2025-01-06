@@ -5,6 +5,7 @@ import { arrayContains } from 'drizzle-orm';
 import { db } from '@/db';
 import { pdi_id } from '@/db/pdi/constants';
 
+import { buttonVariants } from '@/components/ui/button';
 import {
   Table,
   TableBody,
@@ -13,6 +14,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+
+import { cn } from '@/lib/utils';
 
 const Page = async () => {
   const memberships = await db.query.membership.findMany({
@@ -49,8 +52,12 @@ const Page = async () => {
                 !roles.includes('admin') && (
                   <TableRow key={user.id} className="relative">
                     <TableCell>
-                      {user.name}
-                      <Link className="absolute inset-0" href={`/${user.id}`} />
+                      <Link
+                        className={cn(buttonVariants({ variant: 'link' }))}
+                        href={`/${user.id}`}
+                      >
+                        {user.name}
+                      </Link>
                     </TableCell>
                     <TableCell>{user.email}</TableCell>
                   </TableRow>
