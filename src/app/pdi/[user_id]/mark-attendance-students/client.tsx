@@ -53,7 +53,7 @@ export const MarkAttendanceButton = ({
   }, [last_attendance_date]);
 
   return (
-    <form action={action} className="my-16 flex w-min flex-col gap-2">
+    <form action={action} className="mx-auto my-16 flex w-min flex-col gap-2">
       <input type="hidden" name="student_id" defaultValue={params.user_id} />
       <div className={cn({ hidden: day !== 'D' }, 'w-full')}>
         <Label htmlFor="hours">Duración</Label>

@@ -76,7 +76,7 @@ export const Attendance = ({
                       'flex h-full w-full items-center justify-center',
                       displayMonth.getMonth() === today.getMonth() &&
                         date.getDate() <= today.getDate() &&
-                        date.getTime() > start.getTime() &&
+                        date.getTime() >= start.getTime() &&
                         (active_days.includes(days[date.getDay()])
                           ? attendance.some(
                               (d) =>
