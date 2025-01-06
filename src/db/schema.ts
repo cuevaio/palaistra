@@ -340,6 +340,22 @@ export const attendaceRelations = relations(attendance, ({ one }) => ({
     references: [enrollment.id],
   }),
 }));
+
+export const teacher_attendance = pgTable('teacher_attendance', {
+  id: varchar('id', { length: 12 }).primaryKey(),
+
+  student_id: varchar('student_id', { length: 12 })
+    .references(() => user.id)
+    .notNull(),
+  admin_id: varchar('admin_id', { length: 12 })
+    .references(() => user.id)
+    .notNull(),
+
+  palaistra_id: varchar('palaistra_id', { length: 12 })
+    .references(() => palaistra.id)
+    .notNull(),
+});
+
 export const landing_page_contacts = pgTable('landing_page_contacts', {
   id: varchar('id', { length: 12 }).primaryKey(),
 

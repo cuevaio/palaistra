@@ -2,7 +2,10 @@ import { type UserSelect } from '@/db/schema';
 
 import { type Role } from '@/lib/constants';
 
-export type User = Omit<Omit<UserSelect, 'created_at'>, 'updated_at'>;
+export type User = Omit<
+  Omit<Omit<UserSelect, 'created_at'>, 'updated_at'>,
+  'national_id'
+>;
 
 export type Session = {
   id: string;
