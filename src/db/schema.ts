@@ -26,6 +26,8 @@ export const user = pgTable('user', {
   email: varchar('email', { length: 255 }).unique().notNull(),
   name: varchar('name', { length: 255 }).notNull(),
 
+  national_id: varchar('national_id', { length: 12 }).unique(),
+
   created_at: timestamp('created_at', { mode: 'string' })
     .defaultNow()
     .notNull(),

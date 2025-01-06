@@ -1,3 +1,5 @@
+import { eq } from 'drizzle-orm';
+
 import { Day, Role } from '@/lib/constants';
 import { id } from '@/lib/nanoid';
 import { resend } from '@/lib/resend';
@@ -19,6 +21,7 @@ type StudentRegistrationInput = {
   days: string;
   months: string;
   parent_name?: string;
+  student_dni: string;
 };
 
 // Function to parse month ranges and return start and end dates
@@ -62,13 +65,23 @@ function parseMonthsToDateRange(monthsStr: string) {
 }
 
 async function registerStudent(input: StudentRegistrationInput) {
+  const [user_exists] = await db
+    .select()
+    .from(schema.user)
+    .where(eq(schema.user.national_id, input.student_dni));
+
+  if (user_exists) {
+    console.log('User exists', input);
+    return true;
+  }
+
   // Generate student ID
   const student_id = id();
 
   // Determine email based on parent presence
   const student_email = input.parent_name
     ? `user_${student_id}@palaistra.com.pe`
-    : input.email;
+    : input.email.toLowerCase();
 
   // 1. Register the student
   const studentData = {
@@ -94,8 +107,9 @@ async function registerStudent(input: StudentRegistrationInput) {
   let parent_id;
   // 2. If parent exists, register parent
   if (input.parent_name) {
+    const parent_email = input.email.toLowerCase();
     const parent = await db.query.user.findFirst({
-      where: (u, { eq }) => eq(u.email, input.email),
+      where: (u, { eq }) => eq(u.email, parent_email),
     });
 
     if (parent) {
@@ -105,14 +119,14 @@ async function registerStudent(input: StudentRegistrationInput) {
       const parentData = {
         id: parent_id,
         name: input.parent_name,
-        email: input.email,
+        email: parent_email,
       };
 
       // Insert parent
       await db.insert(schema.user).values(parentData);
 
       // Add parent to Redis
-      await redis.set(`email:${input.email}:user:id`, parent_id);
+      await redis.set(`email:${parent_email}:user:id`, parent_id);
       await redis.hset(`user:${parent_id}`, parentData);
       await redis.sadd<Role>(`membership|${parent_id}|${pdi_id}`, 'parent');
 
@@ -223,7 +237,7 @@ async function registerStudent(input: StudentRegistrationInput) {
 
   await resend.emails.send({
     from: 'PDI x Palaistra <pdi@updates.palaistra.com.pe>',
-    to: [input.parent_name ? input.email : student_email],
+    to: [input.email.toLowerCase()],
     subject:
       '¡Bienvenidos a las Clases de Natación! [Información Importante]' +
       (input.parent_name ? ` [${input.student_name.split(' ')[0]}]` : ''),
@@ -254,4 +268,5 @@ await registerStudent({
   start_time: '13:00',
   end_time: '15:00',
   parent_name: 'Luz de Maria Peña Sanchez',
+  student_dni: '12345678',
 });

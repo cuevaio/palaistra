@@ -3,8 +3,9 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 
 import { logout } from '@/app/(auth)/logout.action';
+import { and, eq } from 'drizzle-orm';
 
-import { db } from '@/db';
+import { db, schema } from '@/db';
 import { pdi_id } from '@/db/pdi/constants';
 
 import { Button } from '@/components/ui/button';
@@ -31,73 +32,113 @@ const Page = async (props: { params: Params }) => {
   const params = await props.params;
   const { user_id } = params;
 
-  const enrollment = await db.query.enrollment.findFirst({
-    where: (e, { eq, and }) =>
-      and(eq(e.student_id, user_id), eq(e.palaistra_id, pdi_id)),
+  const membership = await db.query.membership.findFirst({
+    where: () =>
+      and(
+        eq(schema.membership.user_id, user_id),
+        eq(schema.membership.palaistra_id, pdi_id),
+      ),
     with: {
-      student: true,
-      group: true,
-      category: true,
-      sport: true,
-      attendance: true,
+      user: true,
     },
   });
 
-  if (!enrollment) return notFound();
+  if (!membership?.user) return notFound();
 
-  const { student, group, attendance } = enrollment;
+  if (membership.roles.includes('teacher')) {
+    return (
+      <div className="mx-auto flex min-h-[110vh] max-w-md flex-col items-center">
+        <Image
+          src={pdi_logo}
+          width={150}
+          height={150}
+          alt="PDI logo"
+          className="m-10"
+        />
+        <div className="w-64">
+          <QRCode url={`http://pdi.palaistra.com.pe/${user_id}`} />
+        </div>
 
-  return (
-    <div className="mx-auto flex min-h-[110vh] max-w-md flex-col items-center">
-      <Image
-        src={pdi_logo}
-        width={150}
-        height={150}
-        alt="PDI logo"
-        className="m-10"
-      />
-      <div className="w-64">
-        <QRCode url={`http://pdi.palaistra.com.pe/${user_id}`} />
+        <React.Suspense>
+          <MarkAttendance student_id={user_id} />
+        </React.Suspense>
+
+        <form action={logout}>
+          <Button type="submit" className="my-8" variant="outline">
+            Cerrar sesión
+          </Button>
+        </form>
       </div>
-      <div className="my-4 flex flex-col items-center">
-        <p className="text-xl font-bold">{student.name}</p>
-        {group.schedule.map((turno, idx) => (
-          <p key={idx}>
-            {turno.days.join(', ')} | {turno.start_time} - {turno.end_time}
-          </p>
-        ))}
-        <div className="mt-2 grid grid-cols-2 justify-between gap-8">
-          <div className="text-center">
-            <Label className="text-xs">Fecha de inicio</Label>
-            <p>{enrollment.starts_at}</p>
-          </div>
-          <div className="text-center">
-            <Label className="text-xs">Fecha de término</Label>
-            <p>{enrollment.ends_at}</p>
+    );
+  } else {
+    const enrollment = await db.query.enrollment.findFirst({
+      where: (e, { eq, and }) =>
+        and(eq(e.student_id, user_id), eq(e.palaistra_id, pdi_id)),
+      with: {
+        group: true,
+        category: true,
+        sport: true,
+        attendance: true,
+      },
+    });
+
+    if (!enrollment) return notFound();
+
+    const { group, attendance } = enrollment;
+    const student = membership.user;
+
+    return (
+      <div className="mx-auto flex min-h-[110vh] max-w-md flex-col items-center">
+        <Image
+          src={pdi_logo}
+          width={150}
+          height={150}
+          alt="PDI logo"
+          className="m-10"
+        />
+        <div className="w-64">
+          <QRCode url={`http://pdi.palaistra.com.pe/${user_id}`} />
+        </div>
+        <div className="my-4 flex flex-col items-center">
+          <p className="text-xl font-bold">{student.name}</p>
+          {group.schedule.map((turno, idx) => (
+            <p key={idx}>
+              {turno.days.join(', ')} | {turno.start_time} - {turno.end_time}
+            </p>
+          ))}
+          <div className="mt-2 grid grid-cols-2 justify-between gap-8">
+            <div className="text-center">
+              <Label className="text-xs">Fecha de inicio</Label>
+              <p>{enrollment.starts_at}</p>
+            </div>
+            <div className="text-center">
+              <Label className="text-xs">Fecha de término</Label>
+              <p>{enrollment.ends_at}</p>
+            </div>
           </div>
         </div>
+        <Attendance
+          start_date="2025-01-02"
+          active_days={group.schedule[0].days}
+          attendance={attendance.map((a) => ({
+            id: a.id,
+            date: a.taken_at,
+            time: a.duration,
+          }))}
+        />
+
+        <React.Suspense>
+          <MarkAttendance student_id={user_id} />
+        </React.Suspense>
+
+        <form action={logout}>
+          <Button type="submit" className="my-8" variant="outline">
+            Cerrar sesión
+          </Button>
+        </form>
       </div>
-      <Attendance
-        start_date="2025-01-02"
-        active_days={group.schedule[0].days}
-        attendance={attendance.map((a) => ({
-          id: a.id,
-          date: a.taken_at,
-          time: a.duration,
-        }))}
-      />
-
-      <React.Suspense>
-        <MarkAttendance student_id={user_id} />
-      </React.Suspense>
-
-      <form action={logout}>
-        <Button type="submit" className="my-8" variant="outline">
-          Cerrar sesión
-        </Button>
-      </form>
-    </div>
-  );
+    );
+  }
 };
 
 export default Page;
