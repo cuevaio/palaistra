@@ -17,7 +17,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-import { days } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 
 import { markAttendance } from './action';
@@ -37,8 +36,6 @@ export const MarkAttendanceButton = ({
     }
   }, [state, isPending]);
 
-  const day = days[new Date().getDay()];
-
   const has_passed_a_minute = React.useMemo(() => {
     let has_passed_a_minute = true;
     if (last_attendance_date) {
@@ -53,9 +50,9 @@ export const MarkAttendanceButton = ({
   }, [last_attendance_date]);
 
   return (
-    <form action={action} className="my-16 flex w-min flex-col gap-2">
+    <form action={action} className="my-16 flex w-min flex-col gap-2 mx-auto">
       <input type="hidden" name="teacher_id" defaultValue={params.user_id} />
-      <div className={cn({ hidden: day !== 'D' }, 'w-full')}>
+      <div className={cn('w-full')}>
         <Label htmlFor="hours">Duración</Label>
         <Select name="hours" defaultValue="1">
           <SelectTrigger id="hours" className="w-[200px]">
@@ -66,6 +63,8 @@ export const MarkAttendanceButton = ({
               <SelectLabel>Duración</SelectLabel>
               <SelectItem value="1">1h</SelectItem>
               <SelectItem value="2">2h</SelectItem>
+              <SelectItem value="3">3h</SelectItem>
+              <SelectItem value="4">4h</SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>
