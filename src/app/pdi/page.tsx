@@ -103,8 +103,7 @@ const Page = async (props: { params: Params; searchParams: SearchParams }) => {
         <TableHeader>
           <TableRow>
             <TableHead>Alumno</TableHead>
-            <TableHead>Categoría - Grupo</TableHead>
-            <TableHead>Turno</TableHead>
+            <TableHead>Grupo</TableHead>
             <TableHead>Fecha de inicio</TableHead>
             <TableHead>Fecha de término</TableHead>
           </TableRow>
@@ -131,13 +130,10 @@ const Page = async (props: { params: Params; searchParams: SearchParams }) => {
                   </Link>
                 </TableCell>
                 <TableCell>
-                  {category.name} - {group.name}
-                </TableCell>
-                <TableCell>
                   {group.schedule.map((turno, idx) => (
                     <p key={idx}>
-                      {turno.days.join(', ')} | {turno.start_time} -{' '}
-                      {turno.end_time}
+                      {category.name} | {turno.days.join(', ')} |{' '}
+                      {turno.start_time} - {turno.end_time}
                     </p>
                   ))}
                 </TableCell>
