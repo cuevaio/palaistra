@@ -12,6 +12,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 
 import { days as DAYS } from '@/lib/constants';
+import { compareDays } from '@/lib/utils';
 
 export const Filters = () => {
   const searchParams = useSearchParams();
@@ -64,31 +65,20 @@ export const Filters = () => {
   }, [router, op, searchParams]);
 
   return (
-    <div className="grid-cols-2 md:grid space-y-4 md:space-y-0">
+    <div className="grid-cols-2 space-y-4 md:grid md:space-y-0">
       <Input
         placeholder="Buscar..."
         defaultValue={search}
         onChange={(event) => debouncedSearch(event.target.value)}
       />
-      <div className="flex flex-col md:justify-end justify-center items-center gap-4 md:flex-row md:divide-x">
+      <div className="flex flex-col items-center justify-center gap-4 md:flex-row md:justify-end md:divide-x">
         <ToggleGroup
           type="multiple"
           value={days}
           onValueChange={setDays}
           variant="outline"
         >
-          {DAYS.toSorted((a, b) => {
-            const dayOrder = {
-              L: 0, // Lunes
-              M: 1, // Martes
-              X: 2, // Miércoles
-              J: 3, // Jueves
-              V: 4, // Viernes
-              S: 5, // Sábado
-              D: 6, // Domingo
-            };
-            return dayOrder[a] - dayOrder[b];
-          }).map((d) => (
+          {DAYS.toSorted(compareDays).map((d) => (
             <ToggleGroupItem key={d} value={d}>
               {d}
             </ToggleGroupItem>

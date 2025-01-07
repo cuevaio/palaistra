@@ -1,5 +1,8 @@
 'use server';
 
+import { redirect } from 'next/navigation';
+
+import { getUserAndSession } from '@/auth';
 import { NeonDbError } from '@neondatabase/serverless';
 import { eq } from 'drizzle-orm';
 import { z } from 'zod';
@@ -11,6 +14,7 @@ import { redis } from '@/db/redis';
 import { ActionState } from '@/lib/action-state-generic-type';
 import { days, Role } from '@/lib/constants';
 import { id } from '@/lib/nanoid';
+import { compareDays } from '@/lib/utils';
 
 // Using your original types:
 
@@ -32,7 +36,7 @@ const capitalizeName = (x: string) =>
     .map((word) => word[0].toUpperCase() + word.slice(1).toLowerCase())
     .join(' ');
 
-type RegisterStudentState = ActionState<Form>;
+type RegisterStudentState = ActionState<Form, { student_id: string }>;
 
 export const registerStudent = async (
   prevState: null | RegisterStudentState,
@@ -42,6 +46,15 @@ export const registerStudent = async (
   form['days'] = formData.getAll('days').map((x) => x.toString());
 
   try {
+    const auth = await getUserAndSession();
+
+    if (!auth) redirect('/signin');
+    const isAdmin = await redis.sismember(
+      `membership|${auth.user.id}|${pdi_id}`,
+      'admin',
+    );
+
+    if (!isAdmin) redirect('/');
     const data = z
       .object({
         name: z.string().transform(capitalizeName),
@@ -127,11 +140,23 @@ export const registerStudent = async (
     if (data.parent_name) {
       const parent_email = data.email;
       const parent = await db.query.user.findFirst({
-        where: (u, { eq }) => eq(u.email, parent_email),
+        where: (u, { eq, or }) =>
+          or(
+            eq(u.national_id, data.parent_national_id!),
+            eq(u.email, parent_email),
+          ),
       });
 
       if (parent) {
         parent_id = parent.id;
+        if (!parent.national_id) {
+          await db
+            .update(schema.user)
+            .set({
+              national_id: data.parent_national_id!,
+            })
+            .where(eq(schema.user.id, parent.id));
+        }
       } else {
         parent_id = id();
         const parentData = {
@@ -163,9 +188,31 @@ export const registerStudent = async (
         });
       }
     }
+
+    // create the schedule
+    const schedule_id = id();
+    await db.insert(schema.schedule).values({
+      id: schedule_id,
+      palaistra_id: pdi_id,
+      sport: 'swimming',
+      student_id: student_id,
+      valid_from: '2025-01-06',
+      valid_to: '2025-02-01',
+    });
+
+    await db.insert(schema.schedule_block).values({
+      id: id(),
+      schedule_id: schedule_id,
+      days: Array.from(data.days).toSorted(compareDays),
+      hour_end: data.hour_end,
+      hour_start: data.hour_start,
+    });
+
     return {
-      form,
       success: true,
+      data: {
+        student_id,
+      },
     };
   } catch (error) {
     let msg = 'error';

@@ -1,6 +1,8 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 import {
   CalendarDate,
@@ -17,6 +19,7 @@ import { JollyDatePicker } from '@/components/ui/jolly/date-picker';
 import { JollySelect, SelectItem } from '@/components/ui/jolly/select';
 import { JollyTextField } from '@/components/ui/jolly/textfield';
 
+import pdi_logo from '../../logo-pdi.jpg';
 import { registerStudent } from './action';
 
 const Page = () => {
@@ -39,16 +42,29 @@ const Page = () => {
     }
   }, [setParentIsRequired, bDate]);
 
+  const router = useRouter();
+
   React.useEffect(() => {
-    console.log(state?.form);
-  }, [state]);
+    if (state?.success) {
+      router.push(`/${state.data.student_id}`);
+    }
+  }, [state, router]);
+
   return (
     <Form
       key={JSON.stringify(state?.form)}
-      className="mx-auto flex max-w-64 flex-col gap-4"
+      className="mx-auto mb-8 flex max-w-64 flex-col gap-4"
       action={action}
       autoComplete="on"
     >
+      <Image
+        src={pdi_logo}
+        width={200}
+        height={200}
+        alt="PDI logo"
+        className="m-10"
+      />
+      <h1 className="text-center text-xl font-bold">Registrar alumno</h1>
       <JollyTextField
         defaultValue={state?.form?.name}
         name="name"

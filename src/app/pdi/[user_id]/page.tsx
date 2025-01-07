@@ -120,11 +120,18 @@ const Page = async (props: { params: Params }) => {
         <div className="w-64">
           <QRCode url={`http://pdi.palaistra.com.pe/${user_id}`} />
         </div>
+        <p className="text-xs">
+          Fecha de registro:{' '}
+          {new Date(student.created_at + 'Z').toLocaleString('es-PE', {
+            timeZone: 'Europe/Paris',
+          })}
+        </p>
         <div className="my-4 flex flex-col items-center">
           <p className="text-xl font-bold">{student.name}</p>
           {schedule.blocks.map((turno, idx) => (
             <p key={idx}>
-              {turno.days.join(', ')} | {turno.hour_start} - {turno.hour_end}
+              {turno.days.join(', ')} | {turno.hour_start.slice(0, 5)} -{' '}
+              {turno.hour_end.slice(0, 5)}
             </p>
           ))}
           <div className="mt-2 grid grid-cols-2 justify-between gap-8">
