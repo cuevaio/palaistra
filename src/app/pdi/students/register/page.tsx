@@ -95,12 +95,6 @@ const Page = () => {
             label="Nombre del apoderado"
             isRequired
           />
-          <JollyTextField
-            defaultValue={state?.form?.parent_national_id}
-            name="parent_national_id"
-            isRequired
-            label="DNI del apoderado"
-          />
         </>
       )}
 

@@ -16,9 +16,19 @@ const teachers: {
   national_id: string | null;
 }[] = [
   {
-    email: 'lorenita.palomino@gmail.com',
-    name: 'LORENA DANIELA PALOMINO PALACIOS',
-    dni: '44261323',
+    email: 'vadrimerino1@gmail.com',
+    name: 'VALERIA ADRIANA MERINO ARAGÓN',
+    dni: '72429244',
+  },
+  {
+    email: 'alejandrohuisa474@gmail.com',
+    name: 'Miguel Alejandro Vasquez Huisa',
+    dni: '007704430',
+  },
+  {
+    email: 'kleidimarortiz@gmail.com',
+    name: 'KLEIDIMAR ORTIZ HERNÁNDEZ',
+    dni: '004824094',
   },
 ].map((x) => ({
   id: id(),

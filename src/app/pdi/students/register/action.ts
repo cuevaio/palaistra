@@ -23,7 +23,6 @@ type Form = {
   national_id?: string;
   birth_date?: string;
   parent_name?: string;
-  parent_national_id?: string;
   email?: string;
   hour_start?: string;
   hour_end?: string;
@@ -64,7 +63,6 @@ export const registerStudent = async (
           .string()
           .nullish()
           .transform((x) => (x ? capitalizeName(x) : undefined)),
-        parent_national_id: z.string().min(8).nullish(),
         email: z.string().email().toLowerCase(),
         hour_start: z.string().time(),
         hour_end: z.string().time(),
@@ -77,10 +75,7 @@ export const registerStudent = async (
         (1000 * 60 * 60 * 24 * 365.25) >=
       18;
 
-    if (
-      !is18Plus &&
-      !(Boolean(data.parent_name) && Boolean(data.parent_national_id))
-    ) {
+    if (!is18Plus && !Boolean(data.parent_name)) {
       return {
         success: false,
         error: 'Ingrese los datos del apoderado',
@@ -101,7 +96,6 @@ export const registerStudent = async (
 
     if (is18Plus) {
       data.parent_name = undefined;
-      data.parent_national_id = undefined;
     }
 
     // Generate student ID
@@ -140,23 +134,11 @@ export const registerStudent = async (
     if (data.parent_name) {
       const parent_email = data.email;
       const parent = await db.query.user.findFirst({
-        where: (u, { eq, or }) =>
-          or(
-            eq(u.national_id, data.parent_national_id!),
-            eq(u.email, parent_email),
-          ),
+        where: (u, { eq, or }) => or(eq(u.email, parent_email)),
       });
 
       if (parent) {
         parent_id = parent.id;
-        if (!parent.national_id) {
-          await db
-            .update(schema.user)
-            .set({
-              national_id: data.parent_national_id!,
-            })
-            .where(eq(schema.user.id, parent.id));
-        }
       } else {
         parent_id = id();
         const parentData = {
@@ -166,9 +148,7 @@ export const registerStudent = async (
         };
 
         // Insert parent
-        await db
-          .insert(schema.user)
-          .values({ ...parentData, national_id: data.parent_national_id! });
+        await db.insert(schema.user).values({ ...parentData });
 
         // Add parent to Redis
         await redis.set(`email:${parent_email}:user:id`, parent_id);
