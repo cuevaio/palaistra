@@ -21,11 +21,11 @@ import { QRCode } from './qr';
 type Params = Promise<{ user_id: string }>;
 
 export const generateStaticParams = async () => {
-  const enrollments = await db.query.enrollment.findMany({
+  const schedules = await db.query.schedule.findMany({
     where: (e, { eq, and }) => and(eq(e.palaistra_id, pdi_id)),
   });
 
-  return enrollments.map((e) => ({ user_id: e.student_id }));
+  return schedules.map((e) => ({ user_id: e.student_id }));
 };
 
 export const revalidate = 10800; // revalidate every three hours
@@ -91,20 +91,21 @@ const Page = async (props: { params: Params }) => {
       </div>
     );
   } else {
-    const enrollment = await db.query.enrollment.findFirst({
+    const schedule = await db.query.schedule.findFirst({
       where: (e, { eq, and }) =>
         and(eq(e.student_id, user_id), eq(e.palaistra_id, pdi_id)),
       with: {
-        group: true,
-        category: true,
-        sport: true,
-        attendance: true,
+        blocks: true,
       },
     });
 
-    if (!enrollment) return notFound();
+    if (!schedule) return notFound();
 
-    const { group, attendance } = enrollment;
+    const attendance = await db.query.attendance.findMany({
+      where: (e, { eq, and }) =>
+        and(eq(e.student_id, user_id), eq(e.palaistra_id, pdi_id)),
+    });
+
     const student = membership.user;
 
     return (
@@ -121,25 +122,25 @@ const Page = async (props: { params: Params }) => {
         </div>
         <div className="my-4 flex flex-col items-center">
           <p className="text-xl font-bold">{student.name}</p>
-          {group.schedule.map((turno, idx) => (
+          {schedule.blocks.map((turno, idx) => (
             <p key={idx}>
-              {turno.days.join(', ')} | {turno.start_time} - {turno.end_time}
+              {turno.days.join(', ')} | {turno.hour_start} - {turno.hour_end}
             </p>
           ))}
           <div className="mt-2 grid grid-cols-2 justify-between gap-8">
             <div className="text-center">
               <Label className="text-xs">Fecha de inicio</Label>
-              <p>{enrollment.starts_at}</p>
+              <p>{schedule.valid_from}</p>
             </div>
             <div className="text-center">
               <Label className="text-xs">Fecha de término</Label>
-              <p>{enrollment.ends_at}</p>
+              <p>{schedule.valid_to}</p>
             </div>
           </div>
         </div>
         <Attendance
-          start_date={enrollment.starts_at}
-          active_days={group.schedule[0].days}
+          start_date={schedule.valid_from}
+          active_days={schedule.blocks[0].days}
           attendance={attendance.map((a) => ({
             id: a.id,
             date: a.taken_at,

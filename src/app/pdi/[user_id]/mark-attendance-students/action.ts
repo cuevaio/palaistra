@@ -47,34 +47,26 @@ export const markAttendance = async (
       .time()
       .parse('0' + form.hours + ':00:00');
 
-    const enrollment = await db.query.enrollment.findFirst({
+    const schedule = await db.query.schedule.findFirst({
       where: (e, { eq, and }) =>
         and(eq(e.student_id, form.student_id!), eq(e.palaistra_id, pdi_id)),
-      with: {
-        student: true,
-        group: true,
-        category: true,
-        sport: true,
-      },
     });
 
-    if (!enrollment) throw new Error('No enrollment found');
+    if (!schedule) throw new Error('No schedule found');
 
     await db.insert(schema.attendance).values({
       id: id(),
-      student_id: enrollment.student_id,
+
+      student_id: schedule.student_id,
       admin_id: auth.user.id,
 
-      group_id: enrollment.group_id,
-      category_id: enrollment.category_id,
-      sport_id: enrollment.sport_id,
-      palaistra_id: enrollment.palaistra_id,
+      palaistra_id: schedule.palaistra_id,
 
-      enrollment_id: enrollment.id,
+      sport: 'swimming',
       duration,
     });
 
-    revalidatePath(`/${enrollment.student_id}`);
+    revalidatePath(`/${schedule.student_id}`);
 
     return {
       success: true,

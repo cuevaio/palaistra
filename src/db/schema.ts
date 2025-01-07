@@ -1,6 +1,8 @@
-import { relations } from 'drizzle-orm';
+import { relations, sql } from 'drizzle-orm';
 import {
+  check,
   date,
+  index,
   integer,
   jsonb,
   pgEnum,
@@ -14,10 +16,12 @@ import {
 import { createInsertSchema } from 'drizzle-zod';
 import { z } from 'zod';
 
-import { days, roles } from '@/lib/constants';
+import { days, roles, sports } from '@/lib/constants';
 
 export const role_enum = pgEnum('role', roles);
 export const day_enum = pgEnum('day', days);
+
+export const sport_enum = pgEnum('sport_enum', sports);
 
 // Tables definition
 export const user = pgTable('user', {
@@ -248,7 +252,6 @@ export const enrollment = pgTable('enrollment', {
   created_at: timestamp('created_at').defaultNow().notNull(),
   updated_at: timestamp('updated_at').defaultNow().notNull(),
 });
-
 export const enrollmentRelations = relations(enrollment, ({ one, many }) => ({
   student: one(user, {
     fields: [enrollment.student_id],
@@ -274,6 +277,85 @@ export const enrollmentRelations = relations(enrollment, ({ one, many }) => ({
   attendance: many(attendance),
 }));
 
+export const schedule = pgTable(
+  'schedule',
+  {
+    id: varchar('id', { length: 12 }).primaryKey(),
+
+    palaistra_id: varchar('palaistra_id', { length: 12 })
+      .references(() => palaistra.id)
+      .notNull(),
+    sport: sport_enum('sport').notNull(),
+
+    student_id: varchar('student_id', { length: 12 })
+      .references(() => user.id)
+      .notNull(),
+
+    valid_from: date('valid_from', { mode: 'string' }).notNull(),
+    valid_to: date('valid_to', { mode: 'string' }).notNull(),
+
+    created_at: timestamp('created_at').defaultNow().notNull(),
+    updated_at: timestamp('updated_at').defaultNow().notNull(),
+  },
+  (table) => ({
+    // For querying schedules by student
+    byStudentId: index('schedule_by_student_id').on(table.student_id),
+
+    // For finding active schedules (e.g., where current_date between valid_from and valid_to)
+    byDateRange: index('schedule_by_date_range').on(
+      table.valid_from,
+      table.valid_to,
+    ),
+  }),
+);
+export const scheduleRelations = relations(schedule, ({ one, many }) => ({
+  student: one(user, {
+    fields: [schedule.student_id],
+    references: [user.id],
+  }),
+  palaistra: one(palaistra, {
+    fields: [schedule.palaistra_id],
+    references: [palaistra.id],
+  }),
+  blocks: many(schedule_block),
+}));
+
+export const schedule_block = pgTable(
+  'schedule_block',
+  {
+    id: varchar('id', { length: 12 }).primaryKey(),
+
+    schedule_id: varchar('schedule_id', { length: 12 })
+      .references(() => schedule.id)
+      .notNull(),
+
+    days: day_enum('days').array().notNull(),
+    hour_start: time('hour_start').notNull(),
+    hour_end: time('hour_end').notNull(),
+  },
+  (table) => ({
+    // Check that days array doesn't exceed 7 elements
+    maxDays: check('max_days', sql`array_length(days, 1) <= 7`),
+    // Ensure end time is after start time
+    timeRange: check('valid_time_range', sql`hour_start < hour_end`),
+    // For querying blocks by schedule
+    byScheduleId: index('schedule_block_by_schedule_id').on(table.schedule_id),
+
+    // For searching by days (e.g., find all blocks that include Monday)
+    byDays: index('schedule_block_by_days').using('gin', table.days),
+
+    byHourStart: index('schedule_block_by_hour_start').on(table.hour_start),
+    byHourEnd: index('schedule_block_by_hour_end').on(table.hour_end),
+  }),
+);
+
+export const scheduleBlockRelations = relations(schedule_block, ({ one }) => ({
+  student: one(schedule, {
+    fields: [schedule_block.schedule_id],
+    references: [schedule.id],
+  }),
+}));
+
 export const attendance = pgTable('attendance', {
   id: varchar('id', { length: 12 }).primaryKey(),
 
@@ -287,19 +369,14 @@ export const attendance = pgTable('attendance', {
   palaistra_id: varchar('palaistra_id', { length: 12 })
     .references(() => palaistra.id)
     .notNull(),
-  sport_id: varchar('sport_id', { length: 12 })
-    .references(() => sport.id)
-    .notNull(),
-  category_id: varchar('category_id', { length: 12 })
-    .references(() => category.id)
-    .notNull(),
-  group_id: varchar('group_id', { length: 12 })
-    .references(() => group.id)
-    .notNull(),
 
-  enrollment_id: varchar('enrollment_id', { length: 12 })
-    .references(() => enrollment.id)
-    .notNull(),
+  // legacy columns
+  sport_id: varchar('sport_id', { length: 12 }),
+  category_id: varchar('category_id', { length: 12 }),
+  group_id: varchar('group_id', { length: 12 }),
+  enrollment_id: varchar('enrollment_id', { length: 12 }),
+
+  sport: sport_enum('sport').notNull().default('swimming'),
 
   taken_at: timestamp('taken_at', { mode: 'string' }).defaultNow().notNull(),
   duration: time('duration').notNull(),
@@ -386,6 +463,8 @@ export type PalaistraSelect = typeof palaistra.$inferSelect;
 export type CategorySelect = typeof category.$inferInsert;
 export type GroupSelect = typeof group.$inferSelect;
 export type EnrollmentSelect = typeof enrollment.$inferSelect;
+export type ScheduleSelect = typeof schedule.$inferSelect;
+export type ScheduleBlockSelect = typeof schedule_block.$inferSelect;
 
 export type CategoryInsert = typeof category.$inferInsert;
 export type GroupInsert = typeof group.$inferInsert;

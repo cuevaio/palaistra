@@ -10,3 +10,12 @@ export const roles = [
 ] as const;
 
 export type Role = (typeof roles)[number];
+export const sports = [
+  'swimming',
+  'soccer',
+  'basketball',
+  'volleyball',
+  'tennis',
+  'dance',
+  'table_tennis',
+] as const;

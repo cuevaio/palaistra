@@ -1,15 +1,11 @@
 import Link from 'next/link';
 
-import { and, eq, ilike, SQL } from 'drizzle-orm';
+import { and, eq, exists, ilike, or, sql, SQL } from 'drizzle-orm';
+import { z } from 'zod';
 
 import { db, schema } from '@/db';
 import { pdi_id } from '@/db/pdi/constants';
-import {
-  CategorySelect,
-  EnrollmentSelect,
-  GroupSelect,
-  UserSelect,
-} from '@/db/schema';
+import { ScheduleBlockSelect, ScheduleSelect, UserSelect } from '@/db/schema';
 
 import { buttonVariants } from '@/components/ui/button';
 import {
@@ -21,6 +17,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
+import { Day, days as DAYS } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 
 import { Filters } from './filters';
@@ -32,84 +29,245 @@ type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
 const Page = async (props: { params: Params; searchParams: SearchParams }) => {
   const searchParams = await props.searchParams;
+  console.log(searchParams);
 
-  let enrollments: (EnrollmentSelect & {
+  let schedules: (ScheduleSelect & {
     student: UserSelect;
-    group: GroupSelect;
-    category: CategorySelect;
+    blocks: ScheduleBlockSelect[];
   })[] = [];
 
-  let whereClause: SQL<unknown> = eq(schema.enrollment.palaistra_id, pdi_id);
-
-  if (typeof searchParams.group === 'string') {
-    whereClause = and(
-      whereClause,
-      eq(schema.enrollment.group_id, searchParams.group),
-    ) as SQL<unknown>;
+  let days: Day[] = [];
+  if (searchParams.days) {
+    const { success, data } = z
+      .set(z.enum(DAYS))
+      .safeParse(new Set((searchParams.days as string).split('')));
+    if (success) {
+      days = Array.from(data);
+    }
   }
+
+  console.log(days);
+
+  const isAndOperation = searchParams.op === 'AND';
+  const whereClause: SQL<unknown> = eq(schema.schedule.palaistra_id, pdi_id);
+
+  console.log(isAndOperation);
 
   if (typeof searchParams.search === 'string') {
-    const _enrollments = await db
-      .select()
-      .from(schema.enrollment)
-      .leftJoin(schema.user, eq(schema.enrollment.student_id, schema.user.id))
-      .leftJoin(
-        schema.category,
-        eq(schema.enrollment.category_id, schema.category.id),
-      )
-      .leftJoin(schema.group, eq(schema.enrollment.group_id, schema.group.id))
-      .where(
-        and(whereClause, ilike(schema.user.name, `%${searchParams.search}%`)),
-      );
-    enrollments = _enrollments.map(({ enrollment, user, category, group }) => ({
-      ...enrollment,
-      student: user!,
-      category: category!,
-      group: group!,
-    }));
+    if (days.length > 0) {
+      if (isAndOperation) {
+        // AND logic
+        const result = await db
+          .selectDistinct()
+          .from(schema.schedule)
+          .leftJoin(schema.user, eq(schema.schedule.student_id, schema.user.id))
+          .leftJoin(
+            schema.schedule_block,
+            eq(schema.schedule.id, schema.schedule_block.schedule_id),
+          )
+          .where(
+            and(
+              whereClause,
+              ilike(schema.user.name, `%${searchParams.search}%`),
+              ...days.map((day) =>
+                exists(
+                  db
+                    .select({ one: sql`1` })
+                    .from(schema.schedule_block)
+                    .where(
+                      and(
+                        eq(
+                          schema.schedule_block.schedule_id,
+                          schema.schedule.id,
+                        ),
+                        sql`'${sql.raw(day)}' = ANY(${schema.schedule_block.days})`,
+                      ),
+                    ),
+                ),
+              ),
+            ),
+          )
+          .groupBy(
+            schema.user.id,
+            schema.schedule.id,
+            schema.schedule_block.id,
+          );
+
+        schedules = result.map(({ schedule, schedule_block, user }) => ({
+          ...schedule,
+          student: user!,
+          blocks: [schedule_block!],
+        }));
+      } else {
+        // OR logic
+        const result = await db
+          .selectDistinct()
+          .from(schema.schedule)
+          .leftJoin(schema.user, eq(schema.schedule.student_id, schema.user.id))
+          .leftJoin(
+            schema.schedule_block,
+            eq(schema.schedule.id, schema.schedule_block.schedule_id),
+          )
+          .where(
+            and(
+              whereClause,
+              ilike(schema.user.name, `%${searchParams.search}%`),
+              or(
+                ...days.map(
+                  (day) =>
+                    sql`'${sql.raw(day)}' = ANY(${schema.schedule_block.days})`,
+                ),
+              ),
+            ),
+          )
+          .groupBy(
+            schema.user.id,
+            schema.schedule.id,
+            schema.schedule_block.id,
+          );
+
+        schedules = result.map(({ schedule, schedule_block, user }) => ({
+          ...schedule,
+          student: user!,
+          blocks: [schedule_block!],
+        }));
+      }
+    } else {
+      // No days filter, just search
+      const result = await db
+        .selectDistinct()
+        .from(schema.schedule)
+        .leftJoin(schema.user, eq(schema.schedule.student_id, schema.user.id))
+        .leftJoin(
+          schema.schedule_block,
+          eq(schema.schedule.id, schema.schedule_block.schedule_id),
+        )
+        .where(
+          and(whereClause, ilike(schema.user.name, `%${searchParams.search}%`)),
+        )
+        .groupBy(schema.user.id, schema.schedule.id, schema.schedule_block.id);
+
+      schedules = result.map(({ schedule, schedule_block, user }) => ({
+        ...schedule,
+        student: user!,
+        blocks: [schedule_block!],
+      }));
+    }
   } else {
-    enrollments = await db.query.enrollment.findMany({
-      where: () => whereClause,
-      with: {
-        student: true,
-        group: true,
-        category: true,
-      },
-    });
+    if (days.length > 0) {
+      if (isAndOperation) {
+        // AND logic without search
+        const result = await db
+          .selectDistinct()
+          .from(schema.schedule)
+          .leftJoin(schema.user, eq(schema.schedule.student_id, schema.user.id))
+          .leftJoin(
+            schema.schedule_block,
+            eq(schema.schedule.id, schema.schedule_block.schedule_id),
+          )
+          .where(
+            and(
+              whereClause,
+              ...days.map((day) =>
+                exists(
+                  db
+                    .select({ one: sql`1` })
+                    .from(schema.schedule_block)
+                    .where(
+                      and(
+                        eq(
+                          schema.schedule_block.schedule_id,
+                          schema.schedule.id,
+                        ),
+                        sql`'${sql.raw(day)}' = ANY(${schema.schedule_block.days})`,
+                      ),
+                    ),
+                ),
+              ),
+            ),
+          )
+          .groupBy(
+            schema.user.id,
+            schema.schedule.id,
+            schema.schedule_block.id,
+          );
+
+        schedules = result.map(({ schedule, schedule_block, user }) => ({
+          ...schedule,
+          student: user!,
+          blocks: [schedule_block!],
+        }));
+      } else {
+        // OR logic without search
+        console.log('hi');
+        const result = await db
+          .selectDistinct()
+          .from(schema.schedule)
+          .leftJoin(schema.user, eq(schema.schedule.student_id, schema.user.id))
+          .leftJoin(
+            schema.schedule_block,
+            eq(schema.schedule.id, schema.schedule_block.schedule_id),
+          )
+          .where(
+            and(
+              whereClause,
+              or(
+                ...days.map(
+                  (day) =>
+                    sql`'${sql.raw(day)}' = ANY(${schema.schedule_block.days})`,
+                ),
+              ),
+            ),
+          )
+          .groupBy(
+            schema.user.id,
+            schema.schedule.id,
+            schema.schedule_block.id,
+          );
+
+        schedules = result.map(({ schedule, schedule_block, user }) => ({
+          ...schedule,
+          student: user!,
+          blocks: [schedule_block!],
+        }));
+      }
+    } else {
+      // No filters at all
+      const result = await db
+        .selectDistinct()
+        .from(schema.schedule)
+        .leftJoin(schema.user, eq(schema.schedule.student_id, schema.user.id))
+        .leftJoin(
+          schema.schedule_block,
+          eq(schema.schedule.id, schema.schedule_block.schedule_id),
+        )
+        .where(whereClause)
+        .groupBy(schema.user.id, schema.schedule.id, schema.schedule_block.id);
+
+      schedules = result.map(({ schedule, schedule_block, user }) => ({
+        ...schedule,
+        student: user!,
+        blocks: [schedule_block!],
+      }));
+    }
   }
 
-  const groups = await db.query.group.findMany({
-    where: () => eq(schema.group.palaistra_id, pdi_id),
-    with: {
-      category: true,
-    },
-  });
-
   return (
-    <div className="container mx-auto">
+    <div className="container mx-auto flex flex-col gap-4">
       <h1 className="mb-2 text-xl font-semibold">Alumnos</h1>
-      <Filters
-        groups={groups.toSorted((a, b) => {
-          if (a.category.name < b.category.name) {
-            return -1;
-          }
-          if (a.category.name > b.category.name) {
-            return 1;
-          }
-          return 0;
-        })}
-      />
-      <Table>
+      <Filters />
+      <div>{schedules.length} alumnos</div>
+      <Table className="text-xs md:text-base">
         <TableHeader>
           <TableRow>
             <TableHead>Alumno</TableHead>
-            <TableHead>Grupo</TableHead>
-            <TableHead>Fecha de inicio</TableHead>
-            <TableHead>Fecha de término</TableHead>
+            <TableHead>Horario</TableHead>
+            <TableHead className="hidden md:block">Fecha de inicio</TableHead>
+            <TableHead className="hidden md:block">Fecha de término</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {enrollments
+          {schedules
             .toSorted((a, b) => {
               if (a.student.name < b.student.name) {
                 return -1;
@@ -119,7 +277,7 @@ const Page = async (props: { params: Params; searchParams: SearchParams }) => {
               }
               return 0;
             })
-            .map(({ student, category, group, starts_at, ends_at }) => (
+            .map(({ student, valid_from, valid_to, blocks }) => (
               <TableRow key={student.id} className="relative">
                 <TableCell>
                   <Link
@@ -130,15 +288,15 @@ const Page = async (props: { params: Params; searchParams: SearchParams }) => {
                   </Link>
                 </TableCell>
                 <TableCell>
-                  {group.schedule.map((turno, idx) => (
+                  {blocks.map((turno, idx) => (
                     <p key={idx}>
-                      {category.name} | {turno.days.join(', ')} |{' '}
-                      {turno.start_time} - {turno.end_time}
+                      {turno.days.join(', ')} | {turno.hour_start.slice(0, 5)} -{' '}
+                      {turno.hour_end.slice(0, 5)}
                     </p>
                   ))}
                 </TableCell>
-                <TableCell>{starts_at}</TableCell>
-                <TableCell>{ends_at}</TableCell>
+                <TableCell className="hidden md:block">{valid_from}</TableCell>
+                <TableCell className="hidden md:block">{valid_to}</TableCell>
               </TableRow>
             ))}
         </TableBody>
