@@ -19,6 +19,7 @@ import { compareDays } from '@/lib/utils';
 // Using your original types:
 
 type Form = {
+  key?: string;
   name?: string;
   national_id?: string;
   birth_date?: string;
@@ -44,16 +45,35 @@ export const registerStudent = async (
   const form = Object.fromEntries(formData.entries()) as Form;
   form['days'] = formData.getAll('days').map((x) => x.toString());
 
+  console.log(form);
   try {
-    const auth = await getUserAndSession();
+    let authorized = false;
 
-    if (!auth) redirect('/signin');
-    const isAdmin = await redis.sismember(
-      `membership|${auth.user.id}|${pdi_id}`,
-      'admin',
-    );
+    let invite_id: string | undefined = undefined;
 
-    if (!isAdmin) redirect('/');
+    if (form.key) {
+      const [invite] = await db
+        .select()
+        .from(schema.student_invite)
+        .where(eq(schema.student_invite.id, form.key));
+
+      if (invite) {
+        authorized = true;
+        invite_id = invite.id;
+      }
+    }
+
+    if (!authorized) {
+      const auth = await getUserAndSession();
+
+      if (!auth) redirect('/signin');
+      const isAdmin = await redis.sismember(
+        `membership|${auth.user.id}|${pdi_id}`,
+        'admin',
+      );
+      if (!isAdmin) redirect('/');
+    }
+
     const data = z
       .object({
         name: z.string().transform(capitalizeName),
@@ -187,6 +207,16 @@ export const registerStudent = async (
       hour_end: data.hour_end,
       hour_start: data.hour_start,
     });
+
+    if (invite_id) {
+      await db
+        .update(schema.student_invite)
+        .set({
+          student_id: student_id,
+          updated_at: new Date().toISOString(),
+        })
+        .where(eq(schema.student_invite.id, invite_id));
+    }
 
     return {
       success: true,

@@ -14,40 +14,43 @@ export async function middleware(request: NextRequest) {
   const isPDIHostname = hostname.startsWith('pdi.');
 
   if (isPDIHostname) {
-    // Get session for authentication check
-    const auth = await getUserAndSession(request);
+    if (pathname === '/students/register') {
+    } else {
+      // Get session for authentication check
+      const auth = await getUserAndSession(request);
 
-    // If no session, redirect to signin page
-    if (!auth) {
-      const signinUrl = request.nextUrl.clone();
-      signinUrl.pathname = '/signin';
-      return NextResponse.redirect(signinUrl);
-    }
+      // If no session, redirect to signin page
+      if (!auth) {
+        const signinUrl = request.nextUrl.clone();
+        signinUrl.pathname = '/signin';
+        return NextResponse.redirect(signinUrl);
+      }
 
-    // Special handling for the root path on PDI subdomain
-    if (pathname === '/') {
-      // Check if user is admin
-      const isAdmin = await redis.sismember(
-        `membership|${auth.user.id}|${pdi_id}`,
-        'admin',
-      );
-
-      // If not admin, redirect to /{their_id}
-      if (!isAdmin) {
-        const isParent = await redis.sismember(
+      // Special handling for the root path on PDI subdomain
+      if (pathname === '/') {
+        // Check if user is admin
+        const isAdmin = await redis.sismember(
           `membership|${auth.user.id}|${pdi_id}`,
-          'parent',
+          'admin',
         );
 
-        if (isParent) {
+        // If not admin, redirect to /{their_id}
+        if (!isAdmin) {
+          const isParent = await redis.sismember(
+            `membership|${auth.user.id}|${pdi_id}`,
+            'parent',
+          );
+
+          if (isParent) {
+            const userUrl = request.nextUrl.clone();
+            userUrl.pathname = `/pdi/children`;
+            return NextResponse.rewrite(userUrl);
+          }
+
           const userUrl = request.nextUrl.clone();
-          userUrl.pathname = `/pdi/children`;
+          userUrl.pathname = `/pdi/${auth.user.id}`;
           return NextResponse.rewrite(userUrl);
         }
-
-        const userUrl = request.nextUrl.clone();
-        userUrl.pathname = `/pdi/${auth.user.id}`;
-        return NextResponse.rewrite(userUrl);
       }
     }
 

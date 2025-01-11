@@ -23,6 +23,29 @@ export const day_enum = pgEnum('day', days);
 
 export const sport_enum = pgEnum('sport_enum', sports);
 
+export const student_invite = pgTable('student_invite', {
+  id: varchar('id', { length: 12 }).primaryKey(),
+
+  student_id: varchar('student_id', { length: 12 }).references(() => user.id),
+
+  recipient_name: varchar('recipient_name', { length: 255 }).notNull(),
+
+  palaistra_id: varchar('palaistra_id', { length: 12 })
+    .references(() => palaistra.id)
+    .notNull(),
+
+  admin_id: varchar('admin_id', { length: 12 })
+    .references(() => user.id)
+    .notNull(),
+
+  created_at: timestamp('created_at', { mode: 'string' })
+    .defaultNow()
+    .notNull(),
+  updated_at: timestamp('updated_at', { mode: 'string' })
+    .defaultNow()
+    .notNull(),
+});
+
 // Tables definition
 export const user = pgTable('user', {
   id: varchar('id', { length: 12 }).primaryKey(),

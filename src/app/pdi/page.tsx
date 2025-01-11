@@ -254,8 +254,16 @@ const Page = async (props: { params: Params; searchParams: SearchParams }) => {
 
   return (
     <div className="container mx-auto my-4 flex flex-col gap-4">
-      <div className='flex items-center justify-between'>
+      <div className="flex items-center justify-between">
         <h1 className="mb-2 text-xl font-semibold">Alumnos</h1>
+      </div>
+      <div className="div flex justify-between">
+        <Link
+          href="/students"
+          className={cn(buttonVariants({ variant: 'outline' }))}
+        >
+          Invitaciones
+        </Link>
         <Link
           href="/students/register"
           className={cn(buttonVariants({ variant: 'outline' }))}
