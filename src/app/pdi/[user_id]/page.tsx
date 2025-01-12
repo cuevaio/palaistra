@@ -17,6 +17,7 @@ import { AttendanceTeachers } from './attedance-teachers';
 import { MarkAttendanceStudents } from './mark-attendance-students';
 import { MarkAttendanceTeachers } from './mark-attendance-teachers';
 import { QRCode } from './qr';
+import { UpdateSchedule } from './update-schedule';
 
 type Params = Promise<{ user_id: string }>;
 
@@ -134,6 +135,7 @@ const Page = async (props: { params: Params }) => {
               {turno.hour_end.slice(0, 5)}
             </p>
           ))}
+          <UpdateSchedule schedule={schedule} />
           <div className="mt-2 grid grid-cols-2 justify-between gap-8">
             <div className="text-center">
               <Label className="text-xs">Fecha de inicio</Label>

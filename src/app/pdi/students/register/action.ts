@@ -45,7 +45,6 @@ export const registerStudent = async (
   const form = Object.fromEntries(formData.entries()) as Form;
   form['days'] = formData.getAll('days').map((x) => x.toString());
 
-  console.log(form);
   try {
     let authorized = false;
 

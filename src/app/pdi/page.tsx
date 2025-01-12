@@ -29,7 +29,6 @@ type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
 const Page = async (props: { params: Params; searchParams: SearchParams }) => {
   const searchParams = await props.searchParams;
-  console.log(searchParams);
 
   let schedules: (ScheduleSelect & {
     student: UserSelect;
@@ -46,12 +45,8 @@ const Page = async (props: { params: Params; searchParams: SearchParams }) => {
     }
   }
 
-  console.log(days);
-
   const isAndOperation = searchParams.op === 'AND';
   const whereClause: SQL<unknown> = eq(schema.schedule.palaistra_id, pdi_id);
-
-  console.log(isAndOperation);
 
   if (typeof searchParams.search === 'string') {
     if (days.length > 0) {
@@ -278,8 +273,12 @@ const Page = async (props: { params: Params; searchParams: SearchParams }) => {
           <TableRow>
             <TableHead>Alumno</TableHead>
             <TableHead>Horario</TableHead>
-            <TableHead className="hidden md:block">Fecha de inicio</TableHead>
-            <TableHead className="hidden md:block">Fecha de término</TableHead>
+            <TableHead className="hidden md:table-cell">
+              Fecha de inicio
+            </TableHead>
+            <TableHead className="hidden md:table-cell">
+              Fecha de término
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -311,8 +310,12 @@ const Page = async (props: { params: Params; searchParams: SearchParams }) => {
                     </p>
                   ))}
                 </TableCell>
-                <TableCell className="hidden md:block">{valid_from}</TableCell>
-                <TableCell className="hidden md:block">{valid_to}</TableCell>
+                <TableCell className="hidden md:table-cell">
+                  {valid_from}
+                </TableCell>
+                <TableCell className="hidden md:table-cell">
+                  {valid_to}
+                </TableCell>
               </TableRow>
             ))}
         </TableBody>
