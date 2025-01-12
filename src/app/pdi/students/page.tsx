@@ -29,13 +29,13 @@ export default async function UsersPage() {
           <div key={invite.id} className="rounded-xl border p-2 space-y-2">
             <p>Para: {invite.recipient_name}</p>
             <Link href={`/students/register?key=${invite.id}`}>
-              https://pdi.palaistra.com/students/register?key={invite.id}
+              https://pdi.palaistra.com.pe/students/register?key={invite.id}
             </Link>
             <p>
               Creado: <LocalTime time={invite.created_at} />
             </p>
             <CopyLinkButton
-              link={`https://pdi.palaistra.com/students/register?key=${invite.id}`}
+              link={`https://pdi.palaistra.com.pe/students/register?key=${invite.id}`}
             />
             {invite.student_id && (
               <Link

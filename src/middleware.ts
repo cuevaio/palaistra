@@ -12,7 +12,6 @@ export async function middleware(request: NextRequest) {
 
   // Check if it's the PDI subdomain
   const isPDIHostname = hostname.startsWith('pdi.');
-  console.log(pathname);
 
   if (isPDIHostname) {
     if (pathname !== '/students/register') {
