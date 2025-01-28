@@ -158,7 +158,7 @@ const Page = async (props: { params: Params }) => {
         />
 
         <React.Suspense>
-          <MarkAttendanceStudents student_id={user_id} />
+          <MarkAttendanceStudents />
         </React.Suspense>
 
         <form action={logout}>
