@@ -18,6 +18,7 @@ import { id } from '@/lib/nanoid';
 type MarkAttendanceState = ActionState<{
   student_id?: string;
   hours?: string;
+  date?: string;
 }>;
 
 export const markAttendance = async (
@@ -26,8 +27,9 @@ export const markAttendance = async (
 ): Promise<MarkAttendanceState> => {
   const student_id = formData.get('student_id')?.toString();
   const hours = formData.get('hours')?.toString();
+  const date = formData.get('date')?.toString();
 
-  const form = { student_id, hours };
+  const form = { student_id, hours, date };
 
   try {
     const auth = await getUserAndSession();
@@ -64,6 +66,8 @@ export const markAttendance = async (
 
       sport: 'swimming',
       duration,
+
+      taken_at: form.date ? form.date + 'T05:00:00Z' : new Date().toISOString(),
     });
 
     revalidatePath(`/${schedule.student_id}`);

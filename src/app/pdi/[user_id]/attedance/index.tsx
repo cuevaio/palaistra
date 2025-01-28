@@ -31,6 +31,27 @@ export const Attendance = ({
   const start = new Date(Number(y), Number(m) - 1, Number(d));
   const today = new Date();
 
+  const [selectedDate, setSelectedDate] = React.useState<Date | undefined>();
+
+  React.useEffect(() => {
+    if (selectedDate) {
+      localStorage.setItem(
+        'selectedDate',
+        selectedDate.toISOString().split('T')[0],
+      );
+      window.dispatchEvent(new StorageEvent('storage'));
+    }
+  }, [selectedDate]);
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const d = localStorage.getItem('selectedDate');
+      if (d) {
+        setSelectedDate(new Date(d + 'T05:00:00Z'));
+      }
+    }
+  }, []);
+
   const [open, setOpen] = React.useState(false);
 
   const [selectedAttendance, setSelectedAttendance] = React.useState<
@@ -63,7 +84,11 @@ export const Attendance = ({
           className="flex items-start justify-center rounded-lg data-[state=active]:border"
         >
           <Calendar
-            mode="multiple"
+            mode="single"
+            selected={selectedDate}
+            onSelect={(date) => {
+              setSelectedDate(date);
+            }}
             components={{
               DayContent: (props) => {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -112,42 +137,48 @@ export const Attendance = ({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {attendance.map((d) => (
-                <TableRow
-                  key={d.date}
-                  onClick={() => {
-                    setSelectedAttendance(d);
-                    setOpen(true);
-                  }}
-                >
-                  <TableCell>
-                    {new Date(d.date + 'Z').toLocaleDateString('es', {
-                      day: '2-digit',
-                      month: '2-digit',
-                      year: 'numeric',
-                    })}
-                  </TableCell>
-                  <TableCell>{d.time}</TableCell>
-                  <TableCell>
-                    <span
-                      className={cn(
-                        active_days.includes(
+              {attendance
+                .toSorted((a, b) => {
+                  const a_date = new Date(a.date + 'Z');
+                  const b_date = new Date(b.date + 'Z');
+                  return a_date.getTime() - b_date.getTime();
+                })
+                .map((d) => (
+                  <TableRow
+                    key={d.date}
+                    onClick={() => {
+                      setSelectedAttendance(d);
+                      setOpen(true);
+                    }}
+                  >
+                    <TableCell>
+                      {new Date(d.date + 'Z').toLocaleDateString('es', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                      })}
+                    </TableCell>
+                    <TableCell>{d.time}</TableCell>
+                    <TableCell>
+                      <span
+                        className={cn(
+                          active_days.includes(
+                            days[new Date(d.date + 'Z').getDay()],
+                          )
+                            ? 'bg-green-500/60'
+                            : 'bg-blue-500/60',
+                          'rounded-lg px-1 py-1',
+                        )}
+                      >
+                        {active_days.includes(
                           days[new Date(d.date + 'Z').getDay()],
                         )
-                          ? 'bg-green-500/60'
-                          : 'bg-blue-500/60',
-                        'rounded-lg px-1 py-1',
-                      )}
-                    >
-                      {active_days.includes(
-                        days[new Date(d.date + 'Z').getDay()],
-                      )
-                        ? 'Clase'
-                        : 'Recuperación'}
-                    </span>
-                  </TableCell>
-                </TableRow>
-              ))}
+                          ? 'Clase'
+                          : 'Recuperación'}
+                      </span>
+                    </TableCell>
+                  </TableRow>
+                ))}
             </TableBody>
           </Table>
         </TabsContent>

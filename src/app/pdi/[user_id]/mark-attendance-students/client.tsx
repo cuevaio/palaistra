@@ -22,11 +22,7 @@ import { cn } from '@/lib/utils';
 
 import { markAttendance } from './action';
 
-export const MarkAttendanceButton = ({
-  last_attendance_date,
-}: {
-  last_attendance_date?: string;
-}) => {
+export const MarkAttendanceButton = () => {
   const params = useParams<{ user_id: string }>();
 
   const [state, action, isPending] = React.useActionState(markAttendance, null);
@@ -39,22 +35,36 @@ export const MarkAttendanceButton = ({
 
   const day = days[new Date().getDay()];
 
-  const has_passed_a_minute = React.useMemo(() => {
-    let has_passed_a_minute = true;
-    if (last_attendance_date) {
-      const d = new Date(last_attendance_date + 'Z');
-      const now = new Date();
+  const [date, setDate] = React.useState<string | undefined>(undefined);
 
-      if (now.getTime() - d.getTime() < 1000 * 60 * 5) {
-        has_passed_a_minute = false;
+  React.useEffect(() => {
+    // Initial value
+    if (typeof window !== 'undefined') {
+      const d = localStorage.getItem('selectedDate');
+      if (d) {
+        setDate(d);
       }
     }
-    return has_passed_a_minute;
-  }, [last_attendance_date]);
+
+    // Listen for changes
+    const handleStorageChange = () => {
+      const d = localStorage.getItem('selectedDate');
+      if (d) {
+        setDate(d);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
 
   return (
     <form action={action} className="mx-auto my-16 flex w-min flex-col gap-2">
       <input type="hidden" name="student_id" defaultValue={params.user_id} />
+      <input type="hidden" name="date" defaultValue={date} />
       <div className={cn({ hidden: day !== 'D' }, 'w-full')}>
         <Label htmlFor="hours">Duración</Label>
         <Select name="hours" defaultValue="1">
@@ -70,8 +80,12 @@ export const MarkAttendanceButton = ({
           </SelectContent>
         </Select>
       </div>
-      <Button id="mark-assistance" disabled={isPending || !has_passed_a_minute}>
-        Marcar asistencia
+      <Button id="mark-assistance" disabled={isPending}>
+        Marcar asistencia (
+        {new Date(
+          date ? date + 'T05:00:00Z' : new Date().toISOString(),
+        ).toLocaleDateString()}
+        )
       </Button>
     </form>
   );
