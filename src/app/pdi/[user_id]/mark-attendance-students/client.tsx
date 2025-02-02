@@ -17,9 +17,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-import { days } from '@/lib/constants';
-import { cn } from '@/lib/utils';
-
 import { markAttendance } from './action';
 
 export const MarkAttendanceButton = () => {
@@ -28,12 +25,16 @@ export const MarkAttendanceButton = () => {
   const [state, action, isPending] = React.useActionState(markAttendance, null);
 
   React.useEffect(() => {
-    if (!isPending && state?.success) {
-      toast('Asistencia registrada');
+    if (!isPending) {
+      if (state?.success) {
+        toast('Asistencia registrada');
+      } else {
+        if (state?.error === 'no_schedule_found') {
+          toast('El alumno no tiene horario activo en la fecha seleccionada');
+        }
+      }
     }
   }, [state, isPending]);
-
-  const day = days[new Date().getDay()];
 
   const [date, setDate] = React.useState<string | undefined>(undefined);
 
@@ -65,7 +66,7 @@ export const MarkAttendanceButton = () => {
     <form action={action} className="mx-auto my-16 flex w-min flex-col gap-2">
       <input type="hidden" name="student_id" defaultValue={params.user_id} />
       <input type="hidden" name="date" defaultValue={date} />
-      <div className={cn({ hidden: day !== 'D' }, 'w-full')}>
+      <div className="w-full">
         <Label htmlFor="hours">Duración</Label>
         <Select name="hours" defaultValue="1">
           <SelectTrigger id="hours" className="w-[200px]">

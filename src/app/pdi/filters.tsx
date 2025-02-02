@@ -3,7 +3,6 @@
 import React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-import { OmegaIcon } from 'lucide-react';
 import { useDebounceCallback } from 'usehooks-ts';
 
 import { Input } from '@/components/ui/input';
@@ -50,19 +49,16 @@ export const Filters = () => {
     }
   }, [search, router, searchParams]);
 
-  const [op, setOp] = React.useState<string>(searchParams.get('op') ?? 'OR');
+  const [status, setStatus] = React.useState<string>(
+    searchParams.get('status') ?? 'all',
+  );
   React.useEffect(() => {
-    if (op && op !== searchParams.get('op')) {
+    if (status !== searchParams.get('status')) {
       const newSearchParams = new URLSearchParams(searchParams);
-
-      if (!op) {
-        newSearchParams.delete('op');
-      } else {
-        newSearchParams.set('op', op);
-      }
+      newSearchParams.set('status', status);
       router.push(`/?${newSearchParams.toString()}`);
     }
-  }, [router, op, searchParams]);
+  }, [router, status, searchParams]);
 
   return (
     <div className="grid-cols-2 space-y-4 md:grid md:space-y-0">
@@ -85,23 +81,26 @@ export const Filters = () => {
           ))}
         </ToggleGroup>
         <RadioGroup
-          key={op}
-          orientation="horizontal"
-          className="flex pl-4"
-          value={op}
-          onValueChange={setOp}
-          unselectable="on"
+          value={status}
+          onValueChange={setStatus}
+          className="flex items-center gap-4 pl-4"
         >
           <div className="flex items-center space-x-2">
-            <RadioGroupItem value="OR" id="OR" unselectable="on" />
-            <Label htmlFor="OR">
-              <OmegaIcon className="rotate-180" />
+            <RadioGroupItem value="all" id="all" />
+            <Label htmlFor="all" className="text-sm font-medium">
+              Todos
             </Label>
           </div>
           <div className="flex items-center space-x-2">
-            <RadioGroupItem value="AND" id="AND" unselectable="on" />
-            <Label htmlFor="AND">
-              <OmegaIcon />
+            <RadioGroupItem value="active" id="active" />
+            <Label htmlFor="active" className="text-sm font-medium">
+              Activos
+            </Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="inactive" id="inactive" />
+            <Label htmlFor="inactive" className="text-sm font-medium">
+              Inactivos
             </Label>
           </div>
         </RadioGroup>
