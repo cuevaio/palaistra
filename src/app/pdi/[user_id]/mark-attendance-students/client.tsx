@@ -25,8 +25,14 @@ export const MarkAttendanceButton = () => {
   const [state, action, isPending] = React.useActionState(markAttendance, null);
 
   React.useEffect(() => {
-    if (!isPending && state?.success) {
-      toast('Asistencia registrada');
+    if (!isPending) {
+      if (state?.success) {
+        toast('Asistencia registrada');
+      } else {
+        if (state?.error === 'no_schedule_found') {
+          toast('El alumno no tiene horario activo en la fecha seleccionada');
+        }
+      }
     }
   }, [state, isPending]);
 

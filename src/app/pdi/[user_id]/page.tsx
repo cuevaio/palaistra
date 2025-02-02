@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 
 import { logout } from '@/app/(auth)/logout.action';
-import { and, eq, gte } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 
 import { db, schema } from '@/db';
 import { pdi_id } from '@/db/pdi/constants';
@@ -94,26 +94,11 @@ const Page = async (props: { params: Params }) => {
   } else {
     const schedule = await db.query.schedule.findFirst({
       where: (e, { eq, and }) =>
-        and(
-          eq(e.student_id, user_id),
-          eq(e.palaistra_id, pdi_id),
-          gte(
-            e.valid_from,
-            new Date()
-              .toLocaleDateString('es-PE', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                timeZone: 'America/Lima',
-              })
-              .split('/')
-              .toReversed()
-              .join('-'),
-          ),
-        ),
+        and(eq(e.student_id, user_id), eq(e.palaistra_id, pdi_id)),
       with: {
         blocks: true,
       },
+      orderBy: (e, { desc }) => desc(e.valid_from),
     });
 
     if (!schedule) return notFound();
@@ -124,6 +109,19 @@ const Page = async (props: { params: Params }) => {
     });
 
     const student = membership.user;
+
+    const today = new Date()
+      .toLocaleDateString('es-PE', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        timeZone: 'America/Lima',
+      })
+      .split('/')
+      .toReversed()
+      .join('-');
+
+    const isActive = schedule.valid_from <= today && schedule.valid_to >= today;
 
     return (
       <div className="mx-auto flex min-h-[110vh] max-w-md flex-col items-center">
@@ -151,18 +149,25 @@ const Page = async (props: { params: Params }) => {
               {turno.hour_end.slice(0, 5)}
             </p>
           ))}
-          <UpdateSchedule schedule={schedule} />
-          <div className="mt-2 grid grid-cols-2 justify-between gap-8">
+          {isActive && <UpdateSchedule schedule={schedule} />}
+          <div className="mt-2 grid grid-cols-2 justify-between gap-4">
             <div className="text-center">
               <Label className="text-xs">Fecha de inicio</Label>
+
               <p>{schedule.valid_from}</p>
             </div>
             <div className="text-center">
               <Label className="text-xs">Fecha de término</Label>
               <p>{schedule.valid_to}</p>
             </div>
+            {!isActive && (
+              <div className="col-span-2 text-center text-xs text-red-500">
+                No está activo
+              </div>
+            )}
           </div>
         </div>
+
         <Attendance
           start_date={schedule.valid_from}
           active_days={schedule.blocks[0].days}

@@ -49,12 +49,19 @@ export const markAttendance = async (
       .time()
       .parse('0' + form.hours + ':00:00');
 
+    const selectedDate = z.string().date().parse(form.date);
+    console.log(selectedDate);
+
     const schedule = await db.query.schedule.findFirst({
-      where: (e, { eq, and }) =>
-        and(eq(e.student_id, form.student_id!), eq(e.palaistra_id, pdi_id)),
+      where: (e, { eq, and, gte, lte }) =>
+        and(
+          eq(e.student_id, form.student_id!),
+          eq(e.palaistra_id, pdi_id),
+          and(lte(e.valid_from, selectedDate), gte(e.valid_to, selectedDate)),
+        ),
     });
 
-    if (!schedule) throw new Error('No schedule found');
+    if (!schedule) throw new Error('no_schedule_found');
 
     await db.insert(schema.attendance).values({
       id: id(),
@@ -78,11 +85,15 @@ export const markAttendance = async (
     };
   } catch (error) {
     let msg = 'error';
+    if (error instanceof Error) {
+      msg = error.message;
+    }
     if (error instanceof NeonDbError) {
       if (error.constraint?.includes('unique')) {
         msg = 'unique_handle';
       }
     }
+
     console.log(error);
     return {
       success: false,
