@@ -1,5 +1,3 @@
-
-
 import { RenewMembershipForm } from './client';
 
 export const RenewMembership = async ({
@@ -10,12 +8,6 @@ export const RenewMembership = async ({
   student_name: string;
 }) => {
   return (
-    <div>
-      <RenewMembershipForm
-        student_id={student_id}
-        student_name={student_name}
-      />
-
-    </div>
+    <RenewMembershipForm student_id={student_id} student_name={student_name} />
   );
 };

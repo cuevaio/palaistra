@@ -1,21 +1,22 @@
 import Link from 'next/link';
 
 import { and, eq, ilike, or, sql, SQL } from 'drizzle-orm';
+import { CalendarIcon, ClockIcon, ScanEyeIcon } from 'lucide-react';
 import { z } from 'zod';
 
 import { db, schema } from '@/db';
 import { pdi_id } from '@/db/pdi/constants';
 import { ScheduleBlockSelect, ScheduleSelect, UserSelect } from '@/db/schema';
 
+import { Badge } from '@/components/ui/badge';
 import { buttonVariants } from '@/components/ui/button';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
 
 import { Day, days as DAYS } from '@/lib/constants';
 import { cn } from '@/lib/utils';
@@ -181,93 +182,87 @@ const Page = async (props: { params: Params; searchParams: SearchParams }) => {
       </div>
       <Filters />
       <div>{schedules.length} alumnos</div>
-      <Table className="text-xs md:text-base">
-        <TableHeader>
-          <TableRow>
-            <TableHead>Alumno</TableHead>
-            <TableHead>Horario</TableHead>
-            <TableHead className="hidden md:table-cell">
-              Fecha de inicio
-            </TableHead>
-            <TableHead className="hidden md:table-cell">
-              Fecha de término
-            </TableHead>
-            <TableHead className="hidden md:table-cell">
-              Renovar membresía
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {schedules
-            .toSorted((a, b) => {
-              if (a.student.name < b.student.name) {
-                return -1;
-              }
-              if (a.student.name > b.student.name) {
-                return 1;
-              }
-              return 0;
-            })
-            .map(({ student, valid_from, valid_to, blocks }) => (
-              <TableRow key={student.id} className="relative">
-                <TableCell>
-                  <Link
-                    className={cn(buttonVariants({ variant: 'link' }))}
-                    href={`/${student.id}`}
-                  >
-                    {student.name}
-                  </Link>
-                </TableCell>
-                <TableCell>
-                  {blocks.map((turno, idx) => (
-                    <p key={idx}>
-                      {turno.days.join(', ')} | {turno.hour_start.slice(0, 5)} -{' '}
-                      {turno.hour_end.slice(0, 5)}
-                    </p>
-                  ))}
-                </TableCell>
-                <TableCell className="hidden md:table-cell">
-                  {valid_from}
-                </TableCell>
-                <TableCell className="hidden md:table-cell">
-                  {valid_to}
-                </TableCell>
-                <TableCell className="hidden md:table-cell">
-                  {valid_from <=
-                    new Date()
-                      .toLocaleDateString('es-PE', {
-                        year: 'numeric',
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+        {schedules
+          .toSorted((a, b) => {
+            if (a.student.name < b.student.name) {
+              return -1;
+            }
+            if (a.student.name > b.student.name) {
+              return 1;
+            }
+            return 0;
+          })
+          .map(({ student, valid_from, valid_to, blocks }) => (
+            <Card key={student.id} className="flex flex-col">
+              <CardHeader className="items-top flex flex-row justify-between space-y-0 pb-2">
+                <h3 className="flex-1 font-semibold">{student.name}</h3>
 
-                        month: '2-digit',
-                        day: '2-digit',
-                      })
-                      .split('/')
-                      .toReversed()
-                      .join('-') &&
-                  valid_to >=
-                    new Date()
-                      .toLocaleDateString('es-PE', {
-                        year: 'numeric',
-                        month: '2-digit',
-                        day: '2-digit',
-                      })
-                      .split('/')
-                      .toReversed()
-                      .join('-') ? (
-                    <span className="rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800">
-                      Activo
-                    </span>
-                  ) : (
-                    <RenewMembership
-                      student_id={student.id}
-                      student_name={student.name}
-                    />
+                {valid_from <=
+                  new Date()
+                    .toLocaleDateString('es-PE', {
+                      year: 'numeric',
+
+                      month: '2-digit',
+                      day: '2-digit',
+                    })
+                    .split('/')
+                    .toReversed()
+                    .join('-') &&
+                valid_to >=
+                  new Date()
+                    .toLocaleDateString('es-PE', {
+                      year: 'numeric',
+                      month: '2-digit',
+                      day: '2-digit',
+                    })
+                    .split('/')
+                    .toReversed()
+                    .join('-') ? (
+                  <Badge className="ml-2 shrink-0">Activo</Badge>
+                ) : (
+                  <RenewMembership
+                    student_id={student.id}
+                    student_name={student.name}
+                  />
+                )}
+              </CardHeader>
+              <CardContent className="grow py-0">
+                <div className="flex flex-col space-y-3 text-sm">
+                  <div className="flex items-start text-muted-foreground">
+                    <ClockIcon className="my-1 mr-2 h-4 w-4" />
+                    {blocks.map((turno, idx) => (
+                      <p key={idx}>
+                        {turno.days.join(', ')} | {turno.hour_start.slice(0, 5)}{' '}
+                        - {turno.hour_end.slice(0, 5)}
+                      </p>
+                    ))}
+                  </div>
+                  <div className="flex items-start text-muted-foreground">
+                    <CalendarIcon className="my-1 mr-2 h-4 w-4" />
+                    <div>
+                      <p>Inicio: {valid_from}</p>
+                      <p>Término: {valid_to}</p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+              <Separator className="my-4" />
+              <CardFooter>
+                <Link
+                  href={`/${student.id}`}
+                  className={cn(
+                    buttonVariants({ variant: 'outline' }),
+                    'w-full',
                   )}
-                </TableCell>
-              </TableRow>
-            ))}
-        </TableBody>
-      </Table>
+                >
+                  <ScanEyeIcon className="h-4 w-4" />
+                  Ver alumno
+                </Link>
+              </CardFooter>
+            </Card>
+          ))}
+      </div>
     </div>
   );
 };
