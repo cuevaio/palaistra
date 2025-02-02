@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-import { and, eq, exists, ilike, or, sql, SQL } from 'drizzle-orm';
+import { and, eq, ilike, or, sql, SQL } from 'drizzle-orm';
 import { z } from 'zod';
 
 import { db, schema } from '@/db';
@@ -21,6 +21,7 @@ import { Day, days as DAYS } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 
 import { Filters } from './filters';
+import { RenewMembership } from './renew-membership';
 
 export const revalidate = 300; // revalidate every 5 minutes
 
@@ -29,6 +30,43 @@ type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
 const Page = async (props: { params: Params; searchParams: SearchParams }) => {
   const searchParams = await props.searchParams;
+
+  // Add status filter parsing
+  const statusSchema = z.enum(['active', 'inactive', 'all']).catch('all');
+  const status = statusSchema.parse(searchParams.status);
+
+  // Get current date in YYYY-MM-DD format matching the database
+  const currentDate = new Date()
+    .toLocaleDateString('es-PE', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    })
+    .split('/')
+    .toReversed()
+    .join('-');
+
+  // Modify where clause to include status filter
+  let whereClause: SQL<unknown> | undefined = eq(
+    schema.schedule.palaistra_id,
+    pdi_id,
+  );
+
+  if (status === 'active') {
+    whereClause = and(
+      whereClause,
+      sql`${schema.schedule.valid_from} <= ${currentDate}`,
+      sql`${schema.schedule.valid_to} >= ${currentDate}`,
+    );
+  } else if (status === 'inactive') {
+    whereClause = and(
+      whereClause,
+      or(
+        sql`${schema.schedule.valid_from} > ${currentDate}`,
+        sql`${schema.schedule.valid_to} < ${currentDate}`,
+      ),
+    );
+  }
 
   let schedules: (ScheduleSelect & {
     student: UserSelect;
@@ -45,102 +83,45 @@ const Page = async (props: { params: Params; searchParams: SearchParams }) => {
     }
   }
 
-  const isAndOperation = searchParams.op === 'AND';
-  const whereClause: SQL<unknown> = eq(schema.schedule.palaistra_id, pdi_id);
+  // Common selection logic for latest schedules
+  const baseQuery = (additionalWhere?: SQL<unknown>) =>
+    db
+      .selectDistinctOn([schema.schedule.student_id])
+      .from(schema.schedule)
+      .leftJoin(schema.user, eq(schema.schedule.student_id, schema.user.id))
+      .leftJoin(
+        schema.schedule_block,
+        eq(schema.schedule.id, schema.schedule_block.schedule_id),
+      )
+      .where(and(whereClause, additionalWhere))
+      .orderBy(
+        schema.schedule.student_id,
+        sql`${schema.schedule.valid_from} desc`,
+      );
 
   if (typeof searchParams.search === 'string') {
     if (days.length > 0) {
-      if (isAndOperation) {
-        // AND logic
-        const result = await db
-          .selectDistinct()
-          .from(schema.schedule)
-          .leftJoin(schema.user, eq(schema.schedule.student_id, schema.user.id))
-          .leftJoin(
-            schema.schedule_block,
-            eq(schema.schedule.id, schema.schedule_block.schedule_id),
-          )
-          .where(
-            and(
-              whereClause,
-              ilike(schema.user.name, `%${searchParams.search}%`),
-              ...days.map((day) =>
-                exists(
-                  db
-                    .select({ one: sql`1` })
-                    .from(schema.schedule_block)
-                    .where(
-                      and(
-                        eq(
-                          schema.schedule_block.schedule_id,
-                          schema.schedule.id,
-                        ),
-                        sql`'${sql.raw(day)}' = ANY(${schema.schedule_block.days})`,
-                      ),
-                    ),
-                ),
-              ),
+      const result = await baseQuery(
+        and(
+          ilike(schema.user.name, `%${searchParams.search}%`),
+          or(
+            ...days.map(
+              (day) =>
+                sql`'${sql.raw(day)}' = ANY(${schema.schedule_block.days})`,
             ),
-          )
-          .groupBy(
-            schema.user.id,
-            schema.schedule.id,
-            schema.schedule_block.id,
-          );
+          ),
+        ),
+      ).groupBy(schema.user.id, schema.schedule.id, schema.schedule_block.id);
 
-        schedules = result.map(({ schedule, schedule_block, user }) => ({
-          ...schedule,
-          student: user!,
-          blocks: [schedule_block!],
-        }));
-      } else {
-        // OR logic
-        const result = await db
-          .selectDistinct()
-          .from(schema.schedule)
-          .leftJoin(schema.user, eq(schema.schedule.student_id, schema.user.id))
-          .leftJoin(
-            schema.schedule_block,
-            eq(schema.schedule.id, schema.schedule_block.schedule_id),
-          )
-          .where(
-            and(
-              whereClause,
-              ilike(schema.user.name, `%${searchParams.search}%`),
-              or(
-                ...days.map(
-                  (day) =>
-                    sql`'${sql.raw(day)}' = ANY(${schema.schedule_block.days})`,
-                ),
-              ),
-            ),
-          )
-          .groupBy(
-            schema.user.id,
-            schema.schedule.id,
-            schema.schedule_block.id,
-          );
-
-        schedules = result.map(({ schedule, schedule_block, user }) => ({
-          ...schedule,
-          student: user!,
-          blocks: [schedule_block!],
-        }));
-      }
+      schedules = result.map(({ schedule, schedule_block, user }) => ({
+        ...schedule,
+        student: user!,
+        blocks: [schedule_block!],
+      }));
     } else {
-      // No days filter, just search
-      const result = await db
-        .selectDistinct()
-        .from(schema.schedule)
-        .leftJoin(schema.user, eq(schema.schedule.student_id, schema.user.id))
-        .leftJoin(
-          schema.schedule_block,
-          eq(schema.schedule.id, schema.schedule_block.schedule_id),
-        )
-        .where(
-          and(whereClause, ilike(schema.user.name, `%${searchParams.search}%`)),
-        )
-        .groupBy(schema.user.id, schema.schedule.id, schema.schedule_block.id);
+      const result = await baseQuery(
+        ilike(schema.user.name, `%${searchParams.search}%`),
+      ).groupBy(schema.user.id, schema.schedule.id, schema.schedule_block.id);
 
       schedules = result.map(({ schedule, schedule_block, user }) => ({
         ...schedule,
@@ -150,94 +131,26 @@ const Page = async (props: { params: Params; searchParams: SearchParams }) => {
     }
   } else {
     if (days.length > 0) {
-      if (isAndOperation) {
-        // AND logic without search
-        const result = await db
-          .selectDistinct()
-          .from(schema.schedule)
-          .leftJoin(schema.user, eq(schema.schedule.student_id, schema.user.id))
-          .leftJoin(
-            schema.schedule_block,
-            eq(schema.schedule.id, schema.schedule_block.schedule_id),
-          )
-          .where(
-            and(
-              whereClause,
-              ...days.map((day) =>
-                exists(
-                  db
-                    .select({ one: sql`1` })
-                    .from(schema.schedule_block)
-                    .where(
-                      and(
-                        eq(
-                          schema.schedule_block.schedule_id,
-                          schema.schedule.id,
-                        ),
-                        sql`'${sql.raw(day)}' = ANY(${schema.schedule_block.days})`,
-                      ),
-                    ),
-                ),
-              ),
-            ),
-          )
-          .groupBy(
-            schema.user.id,
-            schema.schedule.id,
-            schema.schedule_block.id,
-          );
+      const result = await baseQuery(
+        or(
+          ...days.map(
+            (day) =>
+              sql`'${sql.raw(day)}' = ANY(${schema.schedule_block.days})`,
+          ),
+        ),
+      ).groupBy(schema.user.id, schema.schedule.id, schema.schedule_block.id);
 
-        schedules = result.map(({ schedule, schedule_block, user }) => ({
-          ...schedule,
-          student: user!,
-          blocks: [schedule_block!],
-        }));
-      } else {
-        // OR logic without search
-        console.log('hi');
-        const result = await db
-          .selectDistinct()
-          .from(schema.schedule)
-          .leftJoin(schema.user, eq(schema.schedule.student_id, schema.user.id))
-          .leftJoin(
-            schema.schedule_block,
-            eq(schema.schedule.id, schema.schedule_block.schedule_id),
-          )
-          .where(
-            and(
-              whereClause,
-              or(
-                ...days.map(
-                  (day) =>
-                    sql`'${sql.raw(day)}' = ANY(${schema.schedule_block.days})`,
-                ),
-              ),
-            ),
-          )
-          .groupBy(
-            schema.user.id,
-            schema.schedule.id,
-            schema.schedule_block.id,
-          );
-
-        schedules = result.map(({ schedule, schedule_block, user }) => ({
-          ...schedule,
-          student: user!,
-          blocks: [schedule_block!],
-        }));
-      }
+      schedules = result.map(({ schedule, schedule_block, user }) => ({
+        ...schedule,
+        student: user!,
+        blocks: [schedule_block!],
+      }));
     } else {
-      // No filters at all
-      const result = await db
-        .selectDistinct()
-        .from(schema.schedule)
-        .leftJoin(schema.user, eq(schema.schedule.student_id, schema.user.id))
-        .leftJoin(
-          schema.schedule_block,
-          eq(schema.schedule.id, schema.schedule_block.schedule_id),
-        )
-        .where(whereClause)
-        .groupBy(schema.user.id, schema.schedule.id, schema.schedule_block.id);
+      const result = await baseQuery().groupBy(
+        schema.user.id,
+        schema.schedule.id,
+        schema.schedule_block.id,
+      );
 
       schedules = result.map(({ schedule, schedule_block, user }) => ({
         ...schedule,
@@ -279,6 +192,9 @@ const Page = async (props: { params: Params; searchParams: SearchParams }) => {
             <TableHead className="hidden md:table-cell">
               Fecha de término
             </TableHead>
+            <TableHead className="hidden md:table-cell">
+              Renovar membresía
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -315,6 +231,38 @@ const Page = async (props: { params: Params; searchParams: SearchParams }) => {
                 </TableCell>
                 <TableCell className="hidden md:table-cell">
                   {valid_to}
+                </TableCell>
+                <TableCell className="hidden md:table-cell">
+                  {valid_from <=
+                    new Date()
+                      .toLocaleDateString('es-PE', {
+                        year: 'numeric',
+
+                        month: '2-digit',
+                        day: '2-digit',
+                      })
+                      .split('/')
+                      .toReversed()
+                      .join('-') &&
+                  valid_to >=
+                    new Date()
+                      .toLocaleDateString('es-PE', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                      })
+                      .split('/')
+                      .toReversed()
+                      .join('-') ? (
+                    <span className="rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800">
+                      Activo
+                    </span>
+                  ) : (
+                    <RenewMembership
+                      student_id={student.id}
+                      student_name={student.name}
+                    />
+                  )}
                 </TableCell>
               </TableRow>
             ))}

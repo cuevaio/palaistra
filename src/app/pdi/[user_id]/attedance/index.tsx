@@ -99,22 +99,27 @@ export const Attendance = ({
                     {...tdProps}
                     className={cn(
                       'flex h-full w-full items-center justify-center',
-                      displayMonth.getMonth() === today.getMonth() &&
-                        date.getDate() <= today.getDate() &&
-                        date.getTime() >= start.getTime() &&
-                        (active_days.includes(days[date.getDay()])
-                          ? attendance.some(
-                              (d) =>
-                                new Date(d.date + 'Z').getDate() ===
-                                date.getDate(),
-                            )
-                            ? 'bg-green-500/60'
-                            : 'bg-red-500/60'
-                          : attendance.some(
-                              (d) =>
-                                new Date(d.date + 'Z').getDate() ===
-                                date.getDate(),
-                            ) && 'bg-blue-500/60'),
+                      displayMonth.getMonth() === today.getMonth()
+                        ? date.getDate() <= today.getDate() &&
+                            date.getTime() >= start.getTime() &&
+                            (active_days.includes(days[date.getDay()])
+                              ? attendance.some(
+                                  (d) =>
+                                    new Date(d.date + 'Z').getDate() ===
+                                    date.getDate(),
+                                )
+                                ? 'bg-green-500/60'
+                                : 'bg-red-500/60'
+                              : attendance.some(
+                                  (d) =>
+                                    new Date(d.date + 'Z').getDate() ===
+                                    date.getDate(),
+                                ) && 'bg-blue-500/60')
+                        : attendance.some(
+                            (d) =>
+                              new Date(d.date + 'Z').getDate() ===
+                              date.getDate(),
+                          ) && 'bg-green-500/60',
                     )}
                   >
                     {date.getDate()}

@@ -248,58 +248,6 @@ export const groupRelations = relations(group, ({ one }) => ({
   }),
 }));
 
-export const enrollment = pgTable('enrollment', {
-  id: varchar('id', { length: 12 }).primaryKey(),
-
-  student_id: varchar('student_id', { length: 12 })
-    .references(() => user.id)
-    .notNull(),
-  palaistra_id: varchar('palaistra_id', { length: 12 })
-    .references(() => palaistra.id)
-    .notNull(),
-  sport_id: varchar('sport_id', { length: 12 })
-    .references(() => sport.id)
-    .notNull(),
-  category_id: varchar('category_id', { length: 12 })
-    .references(() => category.id)
-    .notNull(),
-  group_id: varchar('group_id', { length: 12 })
-    .references(() => group.id)
-    .notNull(),
-
-  starts_at: date('starts_at', { mode: 'string' }).notNull(),
-  ends_at: date('ends_at', { mode: 'string' }).notNull(),
-
-  time_attended: time('time_attended').default('00:00:00').notNull(),
-
-  created_at: timestamp('created_at').defaultNow().notNull(),
-  updated_at: timestamp('updated_at').defaultNow().notNull(),
-});
-export const enrollmentRelations = relations(enrollment, ({ one, many }) => ({
-  student: one(user, {
-    fields: [enrollment.student_id],
-    references: [user.id],
-  }),
-  palaistra: one(palaistra, {
-    fields: [enrollment.palaistra_id],
-    references: [palaistra.id],
-  }),
-  sport: one(sport, {
-    fields: [enrollment.sport_id],
-    references: [sport.id],
-  }),
-  category: one(category, {
-    fields: [enrollment.category_id],
-    references: [category.id],
-  }),
-  group: one(group, {
-    fields: [enrollment.group_id],
-    references: [group.id],
-  }),
-
-  attendance: many(attendance),
-}));
-
 export const schedule = pgTable(
   'schedule',
   {
@@ -434,11 +382,6 @@ export const attendaceRelations = relations(attendance, ({ one }) => ({
     fields: [attendance.group_id],
     references: [group.id],
   }),
-
-  enrollment: one(enrollment, {
-    fields: [attendance.enrollment_id],
-    references: [enrollment.id],
-  }),
 }));
 
 export const teacher_attendance = pgTable('teacher_attendance', {
@@ -485,14 +428,12 @@ export type UserSelect = typeof user.$inferSelect;
 export type PalaistraSelect = typeof palaistra.$inferSelect;
 export type CategorySelect = typeof category.$inferInsert;
 export type GroupSelect = typeof group.$inferSelect;
-export type EnrollmentSelect = typeof enrollment.$inferSelect;
 export type ScheduleSelect = typeof schedule.$inferSelect;
 export type ScheduleBlockSelect = typeof schedule_block.$inferSelect;
 
 export type CategoryInsert = typeof category.$inferInsert;
 export type GroupInsert = typeof group.$inferInsert;
 export type MembershipInsert = typeof membership.$inferInsert;
-export type EnrollmentInsert = typeof enrollment.$inferInsert;
 
 // Schemas
 export const PalaistraInsertSchema = createInsertSchema(palaistra);

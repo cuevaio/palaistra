@@ -14,6 +14,7 @@ import {
   TimeValue as AriaTimeValue,
   ValidationResult as AriaValidationResult,
   composeRenderProps,
+  I18nProvider,
   Text,
 } from 'react-aria-components';
 
@@ -83,21 +84,23 @@ function JollyDateField<T extends AriaDateValue>({
   ...props
 }: JollyDateFieldProps<T>) {
   return (
-    <DateField
-      className={composeRenderProps(className, (className) =>
-        cn('group flex flex-col gap-2', className),
-      )}
-      {...props}
-    >
-      <Label>{label}</Label>
-      <DateInput />
-      {description && (
-        <Text className="text-sm text-muted-foreground" slot="description">
-          {description}
-        </Text>
-      )}
-      <FieldError>{errorMessage}</FieldError>
-    </DateField>
+    <I18nProvider locale={'es-PE'}>
+      <DateField
+        className={composeRenderProps(className, (className) =>
+          cn('group flex flex-col gap-2', className),
+        )}
+        {...props}
+      >
+        <Label>{label}</Label>
+        <DateInput />
+        {description && (
+          <Text className="text-sm text-muted-foreground" slot="description">
+            {description}
+          </Text>
+        )}
+        <FieldError>{errorMessage}</FieldError>
+      </DateField>
+    </I18nProvider>
   );
 }
 

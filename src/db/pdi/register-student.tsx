@@ -6,7 +6,6 @@ import { resend } from '@/lib/resend';
 
 import { db, schema } from '..';
 import { redis } from '../redis';
-import { EnrollmentInsert } from '../schema';
 import { pdi_id, sport_id } from './constants';
 import Welcome from './email';
 import { createQR } from './store-qr';
@@ -25,45 +24,6 @@ type StudentRegistrationInput = {
 };
 
 // Function to parse month ranges and return start and end dates
-function parseMonthsToDateRange(monthsStr: string) {
-  const currentYear = 2025;
-  const monthMap: { [key: string]: number } = {
-    Ene: 0,
-    Feb: 1,
-    Mar: 2,
-    Abr: 3,
-    May: 4,
-    Jun: 5,
-    Jul: 6,
-    Ago: 7,
-    Sep: 8,
-    Oct: 9,
-    Nov: 10,
-    Dic: 11,
-  };
-
-  const months = monthsStr.split('-').map((m) => m.trim());
-
-  if (months.length === 1) {
-    const monthNum = monthMap[months[0]];
-    const startDate = new Date(currentYear, monthNum, 1);
-    const endDate = new Date(currentYear, monthNum + 1, 0);
-    return {
-      starts_at: startDate.toISOString().split('T')[0],
-      ends_at: endDate.toISOString().split('T')[0],
-    };
-  } else {
-    const startMonth = monthMap[months[0]];
-    const endMonth = monthMap[months[1]];
-    const startDate = new Date(currentYear, startMonth, 1);
-    const endDate = new Date(currentYear, endMonth + 1, 0);
-    return {
-      starts_at: startDate.toISOString().split('T')[0],
-      ends_at: endDate.toISOString().split('T')[0],
-    };
-  }
-}
-
 export async function registerStudent(input: StudentRegistrationInput) {
   try {
     const [user_exists] = await db
@@ -218,20 +178,6 @@ export async function registerStudent(input: StudentRegistrationInput) {
     }
 
     // 5. Create enrollment
-    const { starts_at, ends_at } = parseMonthsToDateRange(input.months);
-
-    const enrollment: EnrollmentInsert = {
-      id: id(),
-      student_id,
-      palaistra_id: pdi_id,
-      sport_id: sport_id,
-      category_id: category.id,
-      group_id: group.id,
-      starts_at,
-      ends_at,
-    };
-
-    await db.insert(schema.enrollment).values(enrollment);
 
     // 6. Generate QR and send welcome email
     const qr_url = await createQR(`https://pdi.palaistra.com.pe/${student_id}`);
@@ -255,7 +201,6 @@ export async function registerStudent(input: StudentRegistrationInput) {
       student_id,
       email: student_email,
       parent_id: input.parent_name ? parent_id : undefined,
-      enrollment_id: enrollment.id,
     };
   } catch (error) {
     console.log(error);

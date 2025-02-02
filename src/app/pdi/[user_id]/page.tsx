@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 
 import { logout } from '@/app/(auth)/logout.action';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, gte } from 'drizzle-orm';
 
 import { db, schema } from '@/db';
 import { pdi_id } from '@/db/pdi/constants';
@@ -94,7 +94,23 @@ const Page = async (props: { params: Params }) => {
   } else {
     const schedule = await db.query.schedule.findFirst({
       where: (e, { eq, and }) =>
-        and(eq(e.student_id, user_id), eq(e.palaistra_id, pdi_id)),
+        and(
+          eq(e.student_id, user_id),
+          eq(e.palaistra_id, pdi_id),
+          gte(
+            e.valid_from,
+            new Date()
+              .toLocaleDateString('es-PE', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                timeZone: 'America/Lima',
+              })
+              .split('/')
+              .toReversed()
+              .join('-'),
+          ),
+        ),
       with: {
         blocks: true,
       },
