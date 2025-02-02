@@ -68,10 +68,15 @@ export const MarkAttendanceButton = () => {
       <input type="hidden" name="date" defaultValue={date} />
       <div className="w-full">
         <Label htmlFor="hours">Duración</Label>
-        <Select name="hours" defaultValue="1">
+        <Select
+          name="hours"
+          defaultValue={state?.form?.hours || '1'}
+          key={state?.form?.hours}
+        >
           <SelectTrigger id="hours" className="w-[200px]">
             <SelectValue placeholder="Selecciona la duración" />
           </SelectTrigger>
+
           <SelectContent>
             <SelectGroup>
               <SelectLabel>Duración</SelectLabel>

@@ -50,7 +50,6 @@ export const markAttendance = async (
       .parse('0' + form.hours + ':00:00');
 
     const selectedDate = z.string().date().parse(form.date);
-    console.log(selectedDate);
 
     const schedule = await db.query.schedule.findFirst({
       where: (e, { eq, and, gte, lte }) =>
