@@ -138,10 +138,11 @@ const Page = async (props: { params: Params }) => {
         <p className="text-xs">
           Fecha de registro:{' '}
           {new Date(student.created_at + 'Z').toLocaleString('es-PE', {
-            timeZone: 'Europe/Paris',
+            timeZone: 'America/Lima',
           })}
         </p>
         <div className="my-4 flex flex-col items-center">
+
           <p className="text-xl font-bold">{student.name}</p>
           {schedule.blocks.map((turno, idx) => (
             <p key={idx}>
