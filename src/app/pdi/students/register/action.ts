@@ -195,9 +195,11 @@ export const registerStudent = async (
       palaistra_id: pdi_id,
       sport: 'swimming',
       student_id: student_id,
-      valid_from: '2025-01-06',
-      valid_to: '2025-02-01',
+      valid_from: new Date().toISOString(),
+      valid_to: new Date(new Date().getTime() + 30 * 24 * 60 * 60 * 1000)
+        .toISOString(),
     });
+
 
     await db.insert(schema.schedule_block).values({
       id: id(),
